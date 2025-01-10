@@ -46,8 +46,8 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("Study Sync API 문서") // API의 제목
-                .description("Study Sync API 명세서입니다.") // API에 대한 설명
+                .title("학점가방 API 문서") // API의 제목
+                .description("학점가방 API 명세서입니다.") // API에 대한 설명
                 .version("1.0.0"); // API의 버전
     }
 
