@@ -19,11 +19,23 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'io.projectreactor:reactor-test'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    testImplementation 'com.squareup.okhttp3:mockwebserver'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // swagger ui
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    // OAuth
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     // jjwt
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
