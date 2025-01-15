@@ -1,9 +1,8 @@
-package org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule;
+package org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.uni_bag.uni_bag_spring_boot_app.domain.DgLecture;
 import org.uni_bag.uni_bag_spring_boot_app.domain.DgLectureTime;
 import org.uni_bag.uni_bag_spring_boot_app.domain.TimeTable;
@@ -15,12 +14,12 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 @Builder
-public class MyTimeTableScheduleReadResponseDto {
+public class MyTimeTableReadResponseDto {
     private Long tableId;
     List<MyTimeTableLecture> lectures;
 
-    public static MyTimeTableScheduleReadResponseDto of(TimeTable timeTable, Map<DgLecture, List<DgLectureTime>> lectureTimeMap) {
-        return MyTimeTableScheduleReadResponseDto.builder()
+    public static MyTimeTableReadResponseDto of(TimeTable timeTable, Map<DgLecture, List<DgLectureTime>> lectureTimeMap) {
+        return MyTimeTableReadResponseDto.builder()
                 .tableId(timeTable.getId())
                 .lectures(lectureTimeMap.entrySet().stream()
                         .map(dgLectureListEntry -> MyTimeTableLecture.of(dgLectureListEntry.getKey(), dgLectureListEntry.getValue()))

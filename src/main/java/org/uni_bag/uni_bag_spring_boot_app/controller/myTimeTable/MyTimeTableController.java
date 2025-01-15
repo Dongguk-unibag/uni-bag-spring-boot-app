@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateRequestDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleReadResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.MyTimeTableService;
 
 @RestController
@@ -19,8 +19,8 @@ public class MyTimeTableController {
     private final MyTimeTableService myTimeTableService;
 
     @GetMapping("/{timeTableId}")
-    public ResponseEntity<MyTimeTableScheduleReadResponseDto> getMyTimeTableSchedule(@AuthenticationPrincipal User user, @PathVariable Long timeTableId) {
-        MyTimeTableScheduleReadResponseDto responseDto = myTimeTableService.getMyTimeTable(user, timeTableId);
+    public ResponseEntity<MyTimeTableReadResponseDto> getMyTimeTableSchedule(@AuthenticationPrincipal User user, @PathVariable Long timeTableId) {
+        MyTimeTableReadResponseDto responseDto = myTimeTableService.getMyTimeTable(user, timeTableId);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

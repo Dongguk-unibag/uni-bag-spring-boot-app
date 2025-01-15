@@ -7,7 +7,7 @@ import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.*;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateRequestDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleReadResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.DgLectureTimeRepository;
 import org.uni_bag.uni_bag_spring_boot_app.repository.TimeTableLectureRepository;
@@ -26,7 +26,7 @@ public class MyTimeTableService {
     private final TimeTableLectureRepository timeTableLectureRepository;
     private final DgLectureTimeRepository dgLectureTimeRepository;
 
-    public MyTimeTableScheduleReadResponseDto getMyTimeTable(User user, Long timeTableId) {
+    public MyTimeTableReadResponseDto getMyTimeTable(User user, Long timeTableId) {
         TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
         List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
 
@@ -39,7 +39,7 @@ public class MyTimeTableService {
             );
         }
 
-        return MyTimeTableScheduleReadResponseDto.of(foundTimeTable, lecturesTimeMap);
+        return MyTimeTableReadResponseDto.of(foundTimeTable, lecturesTimeMap);
     }
 
     public MyTimeTableCreateResponseDto createMyTimeTable(User user, MyTimeTableCreateRequestDto requestDto){
