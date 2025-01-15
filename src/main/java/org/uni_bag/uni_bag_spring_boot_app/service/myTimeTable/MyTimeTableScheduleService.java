@@ -8,6 +8,8 @@ import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.*;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleCreateRequestDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleCreateResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleDeleteRequestDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleDeleteResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.DgLectureRepository;
 import org.uni_bag.uni_bag_spring_boot_app.repository.DgLectureTimeRepository;
@@ -49,6 +51,44 @@ public class MyTimeTableScheduleService {
         List<DgLecture> existingLectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable).stream().map(TimeTableLecture::getLecture).toList();
         List<DgLectureTime> existingLectureTimes = new ArrayList<>(existingLectures.stream().flatMap(dgLecture -> dgLectureTimeRepository.findAllByDgLecture(dgLecture).stream()).toList());
 
+        checkLectureDuplicated(existingLectures, newLectures);
+
+        while (!newLectureTimes.isEmpty()) {
+            checkLecturesOverlapped(existingLectureTimes, newLectureTimes.get(0));
+            existingLectureTimes.add(newLectureTimes.get(0));
+            newLectureTimes.remove(0);
+        }
+
+        newLectures.forEach(dgLecture -> timeTableLectureRepository.save(TimeTableLecture.of(foundTimeTable, dgLecture)));
+
+        return MyTimeTableScheduleCreateResponseDto.fromEntity(foundTimeTable, newLectures);
+    }
+
+    public MyTimeTableScheduleDeleteResponseDto deleteMyTimeTableSchedule(User user, MyTimeTableScheduleDeleteRequestDto requestDto) {
+        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(requestDto.getTimeTableId(), user)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+
+        DgLecture deleteTargetLecture = dgLectureRepository.findById(requestDto.getLectureId()).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchLectureError));
+
+        TimeTableLecture foundTimeTableLecture = timeTableLectureRepository.findByTimeTableAndLecture(foundTimeTable, deleteTargetLecture)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableScheduleError));
+
+        timeTableLectureRepository.delete(foundTimeTableLecture);
+
+        return MyTimeTableScheduleDeleteResponseDto.of(foundTimeTable, deleteTargetLecture);
+    }
+
+    private void checkLecturesOverlapped(List<DgLectureTime> existingLectureTimes, DgLectureTime newLectureTime){
+        for(DgLectureTime lectureTime : existingLectureTimes){
+            if(lectureTime.getDayOfWeek().equals(newLectureTime.getDayOfWeek())
+                    && lectureTime.getStartTime().before(newLectureTime.getEndTime())
+                            && newLectureTime.getStartTime().before(lectureTime.getEndTime())){
+                throw new HttpErrorException(HttpErrorCode.OverLappingLectureError);
+            }
+        }
+    }
+
+    private void checkLectureDuplicated(List<DgLecture> existingLectures, List<DgLecture> newLectures){
         for(DgLecture newLecture : newLectures){
             for(DgLecture existingLecture : existingLectures){
                 if(newLecture.equals(existingLecture)){
@@ -56,31 +96,5 @@ public class MyTimeTableScheduleService {
                 }
             }
         }
-
-        while (!newLectureTimes.isEmpty()) {
-            boolean isOverLapping = isOverlappingLectures(existingLectureTimes, newLectureTimes.get(0));
-            if(isOverLapping){
-                throw new HttpErrorException(HttpErrorCode.OverLappingLectureError);
-            }
-            existingLectureTimes.add(newLectureTimes.get(0));
-            newLectureTimes.remove(0);
-        }
-
-        newLectures.forEach(dgLecture -> timeTableLectureRepository.save(TimeTableLecture.of(foundTimeTable, dgLecture)));
-
-
-        return MyTimeTableScheduleCreateResponseDto.fromEntity(foundTimeTable, newLectures);
-    }
-
-    private boolean isOverlappingLectures(List<DgLectureTime> existingLectureTimes, DgLectureTime newLectureTime){
-        for(DgLectureTime lectureTime : existingLectureTimes){
-            if(lectureTime.getDayOfWeek().equals(newLectureTime.getDayOfWeek())
-                    && lectureTime.getStartTime().before(newLectureTime.getEndTime())
-                            && newLectureTime.getStartTime().before(lectureTime.getEndTime())){
-                return true;
-            }
-        }
-
-        return false;
     }
 }
