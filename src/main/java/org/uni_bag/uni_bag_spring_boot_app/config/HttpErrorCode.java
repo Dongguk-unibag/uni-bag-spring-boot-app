@@ -82,7 +82,25 @@ public enum HttpErrorCode {
     ),
     NoSuchRefreshTokenError(
             HttpStatus.UNAUTHORIZED, "존재하지 않은 RefreshToken입니다."
-    );
+    ),
+
+    // TimeTable
+    AlreadyExistSeasonTable(
+            HttpStatus.CONFLICT, "해당 학기의 시간표가 이미 존재합니다."
+    ),
+    NoSuchTimeTableError(
+            HttpStatus.NOT_FOUND, "아이디에 해당하는 시간표가 존재하지 않습니다."
+    ),
+    NoSuchLectureError(
+            HttpStatus.NOT_FOUND, "존재하지 않는 강의입니다"
+    ),
+    SemesterMismatchException(
+            HttpStatus.CONFLICT, "선택한 강의와 시간표의 학기가 일치하지 않습니다."
+    ),
+    OverLappingLectureError(
+            HttpStatus.CONFLICT, "추가할 강의가 시간표에 저장된 강의와 겹칩니다."
+    )
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
