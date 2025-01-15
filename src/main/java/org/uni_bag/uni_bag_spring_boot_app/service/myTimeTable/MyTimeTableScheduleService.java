@@ -16,6 +16,7 @@ import org.uni_bag.uni_bag_spring_boot_app.repository.TimeTableLectureRepository
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,9 +46,16 @@ public class MyTimeTableScheduleService {
             newLectureTimes.addAll(dgLectureTimeRepository.findAllByDgLecture(foundLecture));
         }
 
-        List<DgLectureTime> existingLectureTimes = new ArrayList<>(timeTableLectureRepository.findAllByTimeTable(foundTimeTable).stream()
-                .flatMap(timeTableLecture -> dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture()).stream())
-                .toList());
+        List<DgLecture> existingLectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable).stream().map(TimeTableLecture::getLecture).toList();
+        List<DgLectureTime> existingLectureTimes = new ArrayList<>(existingLectures.stream().flatMap(dgLecture -> dgLectureTimeRepository.findAllByDgLecture(dgLecture).stream()).toList());
+
+        for(DgLecture newLecture : newLectures){
+            for(DgLecture existingLecture : existingLectures){
+                if(newLecture.equals(existingLecture)){
+                    throw new HttpErrorException(HttpErrorCode.AlreadyExistLectureScheduleError);
+                }
+            }
+        }
 
         while (!newLectureTimes.isEmpty()) {
             boolean isOverLapping = isOverlappingLectures(existingLectureTimes, newLectureTimes.get(0));
@@ -72,6 +80,7 @@ public class MyTimeTableScheduleService {
                 return true;
             }
         }
+
         return false;
     }
 }

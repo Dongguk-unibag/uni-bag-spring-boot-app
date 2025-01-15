@@ -11,6 +11,7 @@ import lombok.*;
 public class DgLecture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include // 아이디를 기준으로 두개의 엔티티가 서로 같은지 비교
     private Long id;
 
     private String curriculum;

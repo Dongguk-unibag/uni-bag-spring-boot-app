@@ -99,8 +99,10 @@ public enum HttpErrorCode {
     ),
     OverLappingLectureError(
             HttpStatus.CONFLICT, "추가할 강의가 시간표에 저장된 강의와 겹칩니다."
-    )
-    ;
+    ),
+    AlreadyExistLectureScheduleError(
+            HttpStatus.CONFLICT, "이미 존재하는 강의 스케줄입니다."
+    );
 
     private final HttpStatus httpStatus;
     private final String message;
