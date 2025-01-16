@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateRequestDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableDeleteResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableReadResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.*;
 import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.MyTimeTableService;
 
 @RestController
@@ -22,6 +19,12 @@ public class MyTimeTableController {
     @GetMapping("/{timeTableId}")
     public ResponseEntity<MyTimeTableReadResponseDto> getMyTimeTable(@AuthenticationPrincipal User user, @PathVariable Long timeTableId) {
         MyTimeTableReadResponseDto responseDto = myTimeTableService.getMyTimeTable(user, timeTableId);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<MyTimeTableListReadResponseDto> getMyTimeTableList(@AuthenticationPrincipal User user) {
+        MyTimeTableListReadResponseDto responseDto = myTimeTableService.getMyTimeTableList(user);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
