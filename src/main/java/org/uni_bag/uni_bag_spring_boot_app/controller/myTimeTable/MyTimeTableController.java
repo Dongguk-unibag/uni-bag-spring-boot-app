@@ -19,7 +19,7 @@ public class MyTimeTableController {
     private final MyTimeTableService myTimeTableService;
 
     @GetMapping("/{timeTableId}")
-    public ResponseEntity<MyTimeTableReadResponseDto> getMyTimeTableSchedule(@AuthenticationPrincipal User user, @PathVariable Long timeTableId) {
+    public ResponseEntity<MyTimeTableReadResponseDto> getMyTimeTable(@AuthenticationPrincipal User user, @PathVariable Long timeTableId) {
         MyTimeTableReadResponseDto responseDto = myTimeTableService.getMyTimeTable(user, timeTableId);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
