@@ -1,6 +1,7 @@
 package org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
@@ -51,7 +52,7 @@ public class MyTimeTableService {
             throw new HttpErrorException(HttpErrorCode.AlreadyExistSeasonTable);
         }
 
-        TimeTable newTimeTable = timeTableRepository.save(TimeTable.of(requestDto.getYear(), requestDto.getSemester(), user));
+        TimeTable newTimeTable = timeTableRepository.save(TimeTable.of(requestDto.getYear(), requestDto.getSemester(), user, 0));
         return MyTimeTableCreateResponseDto.fromEntity(newTimeTable);
     }
 
@@ -60,5 +61,20 @@ public class MyTimeTableService {
         timeTableRepository.delete(foundTimeTable);
 
         return MyTimeTableDeleteResponseDto.of(foundTimeTable.getId());
+    }
+
+    public MyTimeTableOrderUpdateResponseDto updateMyTimeTableOrder(User user, MyTimeTableOrderUpdateRequestDto requestDto) {
+        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(requestDto.getTimeTableId(), user)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+
+        if(foundTimeTable.getTableOrder() == requestDto.getOrder()){
+            throw new HttpErrorException(HttpErrorCode.SameTableOrderError);
+        }
+
+        Optional<TimeTable> originalOrderTimeTableOptional = timeTableRepository.findByUserAndTableOrder(user, requestDto.getOrder());
+        originalOrderTimeTableOptional.ifPresent(timeTable -> timeTable.updateOrder(0));
+        foundTimeTable.updateOrder(requestDto.getOrder());
+
+        return MyTimeTableOrderUpdateResponseDto.fromEntity(foundTimeTable);
     }
 }

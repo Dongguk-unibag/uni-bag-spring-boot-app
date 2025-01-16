@@ -15,10 +15,8 @@ public class MyTimeTableListReadResponseDto {
 
     public static MyTimeTableListReadResponseDto fromEntity(List<TimeTable> timeTables){
         return MyTimeTableListReadResponseDto.builder()
-                .timeTables(timeTables.stream()
-                        .map(timeTable -> TimeTableInfo.of(timeTable.getId(), timeTable.getYear(), timeTable.getSemester()))
-                        .toList()
-                ).build();
+                .timeTables(timeTables.stream().map(TimeTableInfo::of).toList())
+                .build();
     }
 
 }
@@ -30,12 +28,14 @@ class TimeTableInfo{
     private Long timeTableId;
     private int year;
     private int semester;
+    private int order;
 
-    public static TimeTableInfo of(Long timeTableId, int year, int semester){
+    public static TimeTableInfo of(TimeTable timeTable){
         return TimeTableInfo.builder()
-                .timeTableId(timeTableId)
-                .year(year)
-                .semester(semester)
+                .timeTableId(timeTable.getId())
+                .year(timeTable.getYear())
+                .semester(timeTable.getSemester())
+                .order(timeTable.getTableOrder())
                 .build();
     }
 }

@@ -22,13 +22,18 @@ public class TimeTable {
     @Column(nullable = false)
     private int semester;
 
+    private int tableOrder;
 
-
-    public static TimeTable of(int year, int semester, User user) {
+    public static TimeTable of(int year, int semester, User user, int tableOrder) {
         return TimeTable.builder()
                 .year(year)
                 .semester(semester)
                 .user(user)
+                .tableOrder(tableOrder)
                 .build();
+    }
+
+    public void updateOrder(int order) {
+        this.tableOrder = order;
     }
 }

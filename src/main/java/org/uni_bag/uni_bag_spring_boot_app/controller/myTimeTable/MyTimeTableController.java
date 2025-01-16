@@ -35,6 +35,13 @@ public class MyTimeTableController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/order")
+    public ResponseEntity<MyTimeTableOrderUpdateResponseDto> updateMyTimeTableOrder(@AuthenticationPrincipal User user,
+                                                                               @Valid @RequestBody MyTimeTableOrderUpdateRequestDto requestDto){
+        MyTimeTableOrderUpdateResponseDto responseDto = myTimeTableService.updateMyTimeTableOrder(user, requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
 
     @DeleteMapping("/{timeTableId}")
     public ResponseEntity<MyTimeTableDeleteResponseDto> deleteTimeTable(@AuthenticationPrincipal User user, @PathVariable Long timeTableId) {
