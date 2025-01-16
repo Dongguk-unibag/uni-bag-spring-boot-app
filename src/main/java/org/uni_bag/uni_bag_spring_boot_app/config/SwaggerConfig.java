@@ -19,10 +19,9 @@ import org.uni_bag.uni_bag_spring_boot_app.exception.ErrorResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExample;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExamples;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ExampleHolder;
+import org.uni_bag.uni_bag_spring_boot_app.swagger.JwtTokenErrorExample;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -57,32 +56,48 @@ public class SwaggerConfig {
             ApiErrorCodeExamples apiErrorCodeExamples = handlerMethod.getMethodAnnotation(
                     ApiErrorCodeExamples.class);
 
-            // @ApiErrorCodeExamples 어노테이션이 붙어있다면
-            if (apiErrorCodeExamples != null) {
-                generateErrorCodeResponseExample(operation, apiErrorCodeExamples.value());
-            }
+            JwtTokenErrorExample jwtTokenErrorExample = handlerMethod.getMethodAnnotation(JwtTokenErrorExample.class);
+
+            generateErrorCodeResponseExample(
+                    operation,
+                    jwtTokenErrorExample,
+                    apiErrorCodeExamples == null ? null : apiErrorCodeExamples.value()
+            );
+
 
             return operation;
         };
     }
 
-    private void generateErrorCodeResponseExample(Operation operation, ApiErrorCodeExample[] apiErrorCodeExamples) {
+    private void generateErrorCodeResponseExample(Operation operation, JwtTokenErrorExample jwtTokenErrorExample, ApiErrorCodeExample[] apiErrorCodeExamples) {
         ApiResponses responses = operation.getResponses();
 
-        // ExampleHolder(에러 응답값) 객체를 만들고 에러 코드별로 그룹화
-        Map<Integer, List<ExampleHolder>> statusWithExampleHolders = Arrays.stream(apiErrorCodeExamples)
-                .map(apiErrorCodeExample -> ExampleHolder.builder()
-                        .holder(getSwaggerExample(apiErrorCodeExample.value(), apiErrorCodeExample.description()))
-                        .code(apiErrorCodeExample.value().getHttpStatus().value())
-                        .name(apiErrorCodeExample.value().name())
-                        .build()
-                )
-                .collect(Collectors.groupingBy(ExampleHolder::getCode));
+        List<ExampleHolder> exampleHolders = new ArrayList<>();
+
+        if (jwtTokenErrorExample != null) {
+            List<ExampleHolder> jwtExampleHolders = getJwtExampleHolders();
+            exampleHolders.addAll(jwtExampleHolders);
+        }
+
+        if (apiErrorCodeExamples != null) {
+            List<ExampleHolder> apiExampleHolders = Arrays.stream(apiErrorCodeExamples)
+                    .map(apiErrorCodeExample -> ExampleHolder.builder()
+                            .holder(getSwaggerExample(apiErrorCodeExample.value(), apiErrorCodeExample.description()))
+                            .code(apiErrorCodeExample.value().getHttpStatus().value())
+                            .name(apiErrorCodeExample.value().name())
+                            .build()
+                    ).toList();
+
+            exampleHolders.addAll(apiExampleHolders);
+        }
+
+
+        // 에러 코드별로 그룹
+        Map<Integer, List<ExampleHolder>> statusWithApiExampleHolder = exampleHolders.stream().collect(Collectors.groupingBy(ExampleHolder::getCode));
 
         // ExampleHolders를 ApiResponses에 추가
-        addExamplesToResponses(responses, statusWithExampleHolders);
+        addExamplesToResponses(responses, statusWithApiExampleHolder);
     }
-
 
 
     // ErrorResponseDto 형태의 예시 객체 생성
@@ -90,7 +105,7 @@ public class SwaggerConfig {
         ErrorResponseDto errorResponseDto = ErrorResponseDto.from(errorCode);
         Example example = new Example();
         example.setValue(errorResponseDto);
-        if(!description.isEmpty()) {
+        if (!description.isEmpty()) {
             example.setDescription(description);
         }
 
@@ -117,6 +132,31 @@ public class SwaggerConfig {
                     responses.addApiResponse(String.valueOf(status), apiResponse);
                 }
         );
+    }
+
+    private List<ExampleHolder> getJwtExampleHolders() {
+        return new ArrayList<>(Arrays.asList(
+                ExampleHolder.of(
+                        getSwaggerExample(HttpErrorCode.AccessDeniedError, "요청 헤더에 토큰이 없을 경우 발생합니다."),
+                        HttpErrorCode.AccessDeniedError.name(),
+                        HttpErrorCode.AccessDeniedError.getHttpStatus().value()
+                ),
+                ExampleHolder.of(
+                        getSwaggerExample(HttpErrorCode.NotValidAccessTokenError, "유효하지 않은 엑세스 토큰을 보냈을 경우 발생합니다."),
+                        HttpErrorCode.NotValidAccessTokenError.name(),
+                        HttpErrorCode.NotValidAccessTokenError.getHttpStatus().value()
+                ),
+                ExampleHolder.of(
+                        getSwaggerExample(HttpErrorCode.ExpiredAccessTokenError, "만료된 엑세스 토큰을 보냈을 경우 발생합니다."),
+                        HttpErrorCode.ExpiredAccessTokenError.name(),
+                        HttpErrorCode.ExpiredAccessTokenError.getHttpStatus().value()
+                ),
+                ExampleHolder.of(
+                        getSwaggerExample(HttpErrorCode.UserNotFoundError, "엑세스 토큰에 기록된 유저 정보가 존재하지 않을 경우 발생합니다."),
+                        HttpErrorCode.UserNotFoundError.name(),
+                        HttpErrorCode.UserNotFoundError.getHttpStatus().value()
+                )
+        ));
     }
 }
 
