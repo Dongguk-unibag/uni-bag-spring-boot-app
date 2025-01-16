@@ -7,6 +7,7 @@ import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.*;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateRequestDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableDeleteResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.DgLectureTimeRepository;
@@ -50,5 +51,12 @@ public class MyTimeTableService {
 
         TimeTable newTimeTable = timeTableRepository.save(TimeTable.of(requestDto.getYear(), requestDto.getSemester(), user));
         return MyTimeTableCreateResponseDto.fromEntity(newTimeTable);
+    }
+
+    public MyTimeTableDeleteResponseDto deleteTimeTable(User user, Long timeTableId) {
+        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+        timeTableRepository.delete(foundTimeTable);
+
+        return MyTimeTableDeleteResponseDto.of(foundTimeTable.getId());
     }
 }

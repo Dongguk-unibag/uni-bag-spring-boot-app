@@ -2,6 +2,8 @@ package org.uni_bag.uni_bag_spring_boot_app.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,6 +19,7 @@ public class TimeTableLecture {
     private DgLecture lecture;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private TimeTable timeTable;
 
     public static TimeTableLecture of(TimeTable timeTable, DgLecture lecture){

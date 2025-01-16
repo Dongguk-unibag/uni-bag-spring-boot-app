@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateRequestDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableCreateResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableDeleteResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.MyTimeTableService;
 
@@ -29,5 +30,12 @@ public class MyTimeTableController {
                                                                         @Valid @RequestBody MyTimeTableCreateRequestDto requestDto){
         MyTimeTableCreateResponseDto responseDto = myTimeTableService.createMyTimeTable(user, requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+
+    @DeleteMapping("/{timeTableId}")
+    public ResponseEntity<MyTimeTableDeleteResponseDto> deleteTimeTable(@AuthenticationPrincipal User user, @PathVariable Long timeTableId) {
+        MyTimeTableDeleteResponseDto responseDto = myTimeTableService.deleteTimeTable(user, timeTableId);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
