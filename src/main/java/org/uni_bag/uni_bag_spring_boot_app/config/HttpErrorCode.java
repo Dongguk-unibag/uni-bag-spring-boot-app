@@ -86,10 +86,10 @@ public enum HttpErrorCode {
 
     // TimeTable
     AlreadyExistSeasonTable(
-            HttpStatus.CONFLICT, "해당 학기의 시간표가 이미 존재합니다."
+            HttpStatus.CONFLICT, "해당 년도와 학기의 시간표가 이미 존재합니다."
     ),
     NoSuchTimeTableError(
-            HttpStatus.NOT_FOUND, "아이디에 해당하는 시간표가 존재하지 않습니다."
+            HttpStatus.NOT_FOUND, "시간표가 존재하지 않습니다."
     ),
     NoSuchLectureError(
             HttpStatus.NOT_FOUND, "존재하지 않는 강의입니다"

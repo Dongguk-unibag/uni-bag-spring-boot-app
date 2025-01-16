@@ -1,5 +1,6 @@
 package org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class MyTimeTableScheduleCreateResponseDto {
+    @Schema(example = "1", description = "시간표 아이디")
     private Long timeTableId;
 
     private List<NewLecture> lectures;
@@ -28,8 +30,10 @@ public class MyTimeTableScheduleCreateResponseDto {
 @AllArgsConstructor
 @Builder
 class NewLecture {
+    @Schema(example = "1", description = "강의 아이디")
     private Long lectureId;
 
+    @Schema(example = "알고리즘", description = "강의 이름")
     private String lectureName;
 
     public static NewLecture of(Long lectureId, String lectureName){
