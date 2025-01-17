@@ -42,6 +42,10 @@ public class User implements OAuth2User {
     @Builder.Default()
     private boolean isEmsLoggedIn = false;
 
+    @ColumnDefault("false")
+    @Builder.Default()
+    private boolean isAdmin = false;
+
     private String authority;
 
 
