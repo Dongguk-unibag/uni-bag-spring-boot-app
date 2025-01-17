@@ -109,11 +109,21 @@ public enum HttpErrorCode {
     SameTableOrderError(
             HttpStatus.CONFLICT, "현재 시간표의 순위가 변경하고자 하는 순위와 동일합니다."
     ),
+
+    // Friend
     AlreadyExistFollowError(
             HttpStatus.CONFLICT, "이미 팔로우 관계입니다."
     ),
     NoSuchFollowError(
             HttpStatus.NOT_FOUND, "존재하지 않은 팔로우 관계입니다."
+    ),
+
+    // Assignment
+    NotValidAssignmentTimeError(
+            HttpStatus.BAD_REQUEST, "과제에 할당된 시간이 올바르지 않습니다."
+    ),
+    NoSuchAssignmentError(
+            HttpStatus.NOT_FOUND, "존재하지 않은 과제입니다."
     )
     ;
 
