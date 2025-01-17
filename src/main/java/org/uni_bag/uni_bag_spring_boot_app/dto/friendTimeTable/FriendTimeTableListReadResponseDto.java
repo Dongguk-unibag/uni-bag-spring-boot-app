@@ -13,8 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class FriendTimeTableListReadResponseDto {
+    @Schema(example = "1", description = "친구 아이디")
     private Long friendId;
+
+    @Schema(example = "홍길동", description = "친구 이름")
     private String friendName;
+
     private List<TimeTableInfo> timeTables;
 
     public static FriendTimeTableListReadResponseDto fromEntity(User friend, List<TimeTable> timeTables){

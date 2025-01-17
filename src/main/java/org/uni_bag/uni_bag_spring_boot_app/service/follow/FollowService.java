@@ -21,8 +21,8 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
-    public FollowResponseDto follow(User follower, FollowRequestDto followRequestDto  ) {
-        User followee = userRepository.findById(followRequestDto.getFollowee())
+    public FollowResponseDto follow(User follower, FollowRequestDto followRequestDto) {
+        User followee = userRepository.findById(followRequestDto.getFolloweeId())
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
 
         if(followRepository.existsByFollowerAndFollowee(follower, followee)){
@@ -35,7 +35,7 @@ public class FollowService {
     }
 
     public UnfollowResponseDto unfollow(User follower, @Valid UnfollowRequestDto unfollowRequestDto) {
-        User followee = userRepository.findById(unfollowRequestDto.getFollowee())
+        User followee = userRepository.findById(unfollowRequestDto.getUnfolloweeId())
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
 
         Follow foundFollow = followRepository.findByFollowerAndFollowee(follower, followee)

@@ -17,8 +17,12 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 public class FriendTimeTableReadResponseDto {
+    @Schema(example = "1", description = "친구 아이디")
     private Long friendId;
+
+    @Schema(example = "홍길동", description = "친구 이름")
     private String friendName;
+
     @Schema(example = "1", description = "시간표 아이디")
     private Long tableId;
 
