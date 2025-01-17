@@ -42,13 +42,25 @@ public class MyTimeTableController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-
     @Operation(summary = "개인 시간표 리스트 조회")
     @JwtTokenErrorExample()
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MyTimeTableListReadResponseDto.class)))
     @GetMapping()
     public ResponseEntity<MyTimeTableListReadResponseDto> getMyTimeTableList(@AuthenticationPrincipal User user) {
         MyTimeTableListReadResponseDto responseDto = myTimeTableService.getMyTimeTableList(user);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "특정 시간표에 대한 강의 조회")
+    @JwtTokenErrorExample()
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
+    })
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MyEnrolledLectureReadResponseDto.class)))
+    @GetMapping("/{timeTableId}/lecture")
+    public ResponseEntity<MyEnrolledLectureReadResponseDto> getMyEnrolledLecture(@AuthenticationPrincipal User user,
+                                                                                 @Parameter(example = "1", required = true, description = "찾고자하는 시간표 아이디") @PathVariable Long timeTableId) {
+        MyEnrolledLectureReadResponseDto responseDto = myTimeTableService.getMyEnrolledLecture(user, timeTableId);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

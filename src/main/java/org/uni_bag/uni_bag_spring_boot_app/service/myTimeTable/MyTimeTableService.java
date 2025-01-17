@@ -1,7 +1,6 @@
 package org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
@@ -76,5 +75,14 @@ public class MyTimeTableService {
         foundTimeTable.updateOrder(requestDto.getOrder());
 
         return MyTimeTableOrderUpdateResponseDto.fromEntity(foundTimeTable);
+    }
+
+    public MyEnrolledLectureReadResponseDto getMyEnrolledLecture(User user, Long timeTableId) {
+        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+
+        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
+
+        return MyEnrolledLectureReadResponseDto.of(lectures);
     }
 }
