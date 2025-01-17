@@ -29,6 +29,13 @@ public class AssignmentController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    @PostMapping("/{assignmentId}/toggle")
+    public ResponseEntity<AssignmentCompleteToggleResponseDto> toggleAssignmentComplete(@AuthenticationPrincipal User user,
+                                                                                        @PathVariable Long assignmentId){
+        AssignmentCompleteToggleResponseDto responseDto = assignmentService.toggleAssignmentComplete(user, assignmentId);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
     @PostMapping()
     public ResponseEntity<AssignmentCreateResponseDto> createAssignment(@AuthenticationPrincipal User user,
                                                                         @Valid @RequestBody AssignmentCreateRequestDto requestDto){

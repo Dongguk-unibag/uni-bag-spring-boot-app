@@ -2,6 +2,7 @@ package org.uni_bag.uni_bag_spring_boot_app.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.uni_bag.uni_bag_spring_boot_app.dto.assignment.AssignmentCreateRequestDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.assignment.AssignmentUpdateRequestDto;
 
@@ -32,12 +33,20 @@ public class Assignment {
 
     private LocalDateTime endDateTime;
 
+    @ColumnDefault("false")
+    @Builder.Default()
+    private boolean isCompleted = false;
+
     public void updateAssignment(AssignmentUpdateRequestDto requestDto, DgLecture lecture) {
         this.title = requestDto.getTitle();
         this.description = requestDto.getDescription();
         this.lecture = lecture;
         this.startDateTime = requestDto.getStartDateTime();
         this.endDateTime = requestDto.getEndDateTime();
+    }
+
+    public void toggleCompleted() {
+        this.isCompleted = !this.isCompleted;
     }
 
     public static Assignment of(User user, DgLecture lecture, AssignmentCreateRequestDto requestDto) {

@@ -92,4 +92,13 @@ public class AssignmentService {
             throw new HttpErrorException(HttpErrorCode.NotValidAssignmentTimeError);
         }
     }
+
+    public AssignmentCompleteToggleResponseDto toggleAssignmentComplete(User user, Long assignmentId) {
+        Assignment foundAssignment = assignmentRepository.findByIdAndUser(assignmentId, user)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchAssignmentError));
+
+        foundAssignment.toggleCompleted();
+
+        return AssignmentCompleteToggleResponseDto.fromEntity(foundAssignment);
+    }
 }
