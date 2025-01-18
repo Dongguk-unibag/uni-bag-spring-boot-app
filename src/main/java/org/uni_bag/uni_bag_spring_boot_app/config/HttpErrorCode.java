@@ -129,7 +129,11 @@ public enum HttpErrorCode {
     // TOS
     AlreadyAgreeTosError(
             HttpStatus.CONFLICT, "이미 이용약관을 동의하였습니다."
-    );
+    ),
+    AlreadyEmsLoginError(
+            HttpStatus.CONFLICT, "이미 사용자가 EMS 서버에 로그인하였습니다."
+    )
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
