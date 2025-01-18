@@ -64,6 +64,10 @@ public class User implements OAuth2User {
         return name;
     }
 
+    public void agreeTos(){
+        this.isTosAccepted = true;
+    }
+
     public static User from(OAuthUserInfoDto dto){
         return User.builder()
                 .snsId(dto.getSnsId())

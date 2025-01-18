@@ -124,8 +124,12 @@ public enum HttpErrorCode {
     ),
     NoSuchAssignmentError(
             HttpStatus.NOT_FOUND, "존재하지 않은 과제입니다."
-    )
-    ;
+    ),
+
+    // TOS
+    AlreadyAgreeTosError(
+            HttpStatus.CONFLICT, "이미 이용약관을 동의하였습니다."
+    );
 
     private final HttpStatus httpStatus;
     private final String message;
