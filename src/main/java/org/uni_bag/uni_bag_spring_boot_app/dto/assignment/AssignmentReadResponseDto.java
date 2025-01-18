@@ -21,8 +21,7 @@ public class AssignmentReadResponseDto {
     @Schema(example = "알고리즘 1장 풀기", description = "과제 내용")
     private String description;
 
-    @Schema(example = "1", description = "강의 아이디")
-    private Long lectureId;
+    private AssignmentLectureDto lecture;
 
     @Schema(example = "2025-01-17T15:11:58.340Z", description = "과제 시작일")
     private LocalDateTime startDateTime;
@@ -35,7 +34,7 @@ public class AssignmentReadResponseDto {
                 .assignmentId(assignment.getId())
                 .title(assignment.getTitle())
                 .description(assignment.getDescription())
-                .lectureId(assignment.getLecture() == null ? null : assignment.getLecture().getId())
+                .lecture(assignment.getLecture() == null ? null : AssignmentLectureDto.fromEntity(assignment.getLecture()))
                 .startDateTime(assignment.getStartDateTime())
                 .endDateTime(assignment.getEndDateTime())
                 .build();

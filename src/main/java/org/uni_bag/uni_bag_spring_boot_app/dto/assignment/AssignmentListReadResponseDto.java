@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class AssignmentListReadResponseDto {
-   private List<MyAssignment> assignments;
+   private List<AssignmentDto> assignments;
 
    public static AssignmentListReadResponseDto fromEntity(List<Assignment> assignments){
        return AssignmentListReadResponseDto.builder()
-               .assignments(assignments.stream().map(MyAssignment::fromEntity).toList())
+               .assignments(assignments.stream().map(AssignmentDto::fromEntity).toList())
                .build();
    }
 }
@@ -26,7 +26,7 @@ public class AssignmentListReadResponseDto {
 @Getter
 @AllArgsConstructor
 @Builder
-class MyAssignment {
+class AssignmentDto {
     @Schema(example = "1", description = "과제 아이디")
     private Long assignmentId;
 
@@ -36,8 +36,7 @@ class MyAssignment {
     @Schema(example = "알고리즘 1장 풀기", description = "과제 내용")
     private String description;
 
-    @Schema(example = "1", description = "강의 아이디")
-    private Long lectureId;
+    private AssignmentLectureDto lecture;
 
     @Schema(example = "2025-01-17T15:11:58.340Z", description = "과제 시작일")
     private LocalDateTime startDateTime;
@@ -45,12 +44,12 @@ class MyAssignment {
     @Schema(example = "2025-01-17T15:11:58.340Z", description = "과제 종료일")
     private LocalDateTime endDateTime;
 
-    public static MyAssignment fromEntity(Assignment assignment){
-        return MyAssignment.builder()
+    public static AssignmentDto fromEntity(Assignment assignment){
+        return AssignmentDto.builder()
                 .assignmentId(assignment.getId())
                 .title(assignment.getTitle())
                 .description(assignment.getDescription())
-                .lectureId(assignment.getLecture() == null ? null : assignment.getLecture().getId())
+                .lecture(assignment.getLecture() == null ? null : AssignmentLectureDto.fromEntity(assignment.getLecture()))
                 .startDateTime(assignment.getStartDateTime())
                 .endDateTime(assignment.getEndDateTime())
                 .build();
