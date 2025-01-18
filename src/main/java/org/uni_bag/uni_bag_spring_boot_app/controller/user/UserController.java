@@ -16,6 +16,7 @@ import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserInfoDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserInfoResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserSearchResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserTosAgreementResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.service.user.UserService;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExample;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExamples;
@@ -24,7 +25,7 @@ import org.uni_bag.uni_bag_spring_boot_app.swagger.JwtTokenErrorExample;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
-@Tag(name = "회원 정보")
+@Tag(name = "회원 정보 관리")
 public class UserController {
     private final UserService userService;
 
@@ -53,6 +54,18 @@ public class UserController {
                                                             @Parameter(description = "회원 이름", required = true, example = "홍길동") @RequestParam String name,
                                                             @Parameter(description = "회원 학번", required = true, example = "2019212001") @RequestParam String studentId) {
         UserSearchResponseDto responseDto = userService.searchUser(user, name, studentId);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "이용약관 동의")
+    @JwtTokenErrorExample
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.AlreadyAgreeTosError)
+    })
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTosAgreementResponseDto.class)))
+    @PostMapping("/tos/agreement")
+    public ResponseEntity<UserTosAgreementResponseDto> agreeTos(@AuthenticationPrincipal User user) {
+        UserTosAgreementResponseDto responseDto = userService.agreeTos(user);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

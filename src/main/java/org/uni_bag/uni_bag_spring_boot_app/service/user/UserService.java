@@ -7,6 +7,7 @@ import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserInfoDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserSearchResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserTosAgreementResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.UserRepository;
 
@@ -25,5 +26,16 @@ public class UserService {
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
 
         return UserSearchResponseDto.fromEntity(foundUser);
+    }
+
+    public UserTosAgreementResponseDto agreeTos(User user) {
+        User foundUser = userRepository.findById(user.getId()).orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
+
+        if(foundUser.isTosAccepted()) {
+            throw new HttpErrorException(HttpErrorCode.AlreadyAgreeTosError);
+        }
+
+        foundUser.agreeTos();
+        return UserTosAgreementResponseDto.createResponse();
     }
 }
