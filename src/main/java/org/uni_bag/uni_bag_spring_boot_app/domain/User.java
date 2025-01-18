@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.uni_bag.uni_bag_spring_boot_app.constant.SnsType;
 import org.uni_bag.uni_bag_spring_boot_app.dto.auth.oauth.userInfo.OAuthUserInfoDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserEmsLoginCompleteRequestDto;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -66,6 +67,12 @@ public class User implements OAuth2User {
 
     public void agreeTos(){
         this.isTosAccepted = true;
+    }
+
+    public void completeEmsLogin(UserEmsLoginCompleteRequestDto requestDto){
+        this.isEmsLoggedIn = true;
+        this.name = requestDto.getName();
+        this.studentId = requestDto.getStudentId();
     }
 
     public static User from(OAuthUserInfoDto dto){

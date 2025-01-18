@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
-import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserInfoDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserInfoResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserSearchResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserTosAgreementResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.user.*;
 import org.uni_bag.uni_bag_spring_boot_app.service.user.UserService;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExample;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExamples;
@@ -67,5 +65,18 @@ public class UserController {
     public ResponseEntity<UserTosAgreementResponseDto> agreeTos(@AuthenticationPrincipal User user) {
         UserTosAgreementResponseDto responseDto = userService.agreeTos(user);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "EMS 로그인 완료")
+    @JwtTokenErrorExample
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.AlreadyEmsLoginError)
+    })
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = UserEmsLoginCompleteResponseDto.class)))
+    @PostMapping("/emsLogin/complete")
+    public ResponseEntity<UserEmsLoginCompleteResponseDto> completeEmsLogin(@AuthenticationPrincipal User user,
+                                                                            @Valid @RequestBody UserEmsLoginCompleteRequestDto requestDto) {
+        UserEmsLoginCompleteResponseDto responseDto = userService.completeEmsLogin(user, requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 }

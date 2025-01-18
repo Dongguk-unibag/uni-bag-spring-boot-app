@@ -1,13 +1,12 @@
 package org.uni_bag.uni_bag_spring_boot_app.service.user;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
-import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserInfoDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserSearchResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserTosAgreementResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.user.*;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.UserRepository;
 
@@ -37,5 +36,16 @@ public class UserService {
 
         foundUser.agreeTos();
         return UserTosAgreementResponseDto.createResponse();
+    }
+
+    public UserEmsLoginCompleteResponseDto completeEmsLogin(User user, @Valid UserEmsLoginCompleteRequestDto requestDto) {
+        User foundUser = userRepository.findById(user.getId()).orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
+
+        if(foundUser.isEmsLoggedIn()){
+            throw new HttpErrorException(HttpErrorCode.AlreadyEmsLoginError);
+        }
+
+        foundUser.completeEmsLogin(requestDto);
+        return UserEmsLoginCompleteResponseDto.createResponse();
     }
 }
