@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.uni_bag.uni_bag_spring_boot_app.domain.DgLecture;
 import org.uni_bag.uni_bag_spring_boot_app.domain.DgLectureTime;
 import org.uni_bag.uni_bag_spring_boot_app.domain.TimeTable;
+import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.LectureTimeColor;
 
 import java.sql.Time;
 import java.util.List;
@@ -21,7 +22,7 @@ public class MyTimeTableReadResponseDto {
 
     List<MyTimeTableLecture> lectures;
 
-    public static MyTimeTableReadResponseDto of(TimeTable timeTable, Map<DgLecture, List<DgLectureTime>> lectureTimeMap) {
+    public static MyTimeTableReadResponseDto of(TimeTable timeTable, Map<DgLecture, LectureTimeColor> lectureTimeMap) {
         return MyTimeTableReadResponseDto.builder()
                 .tableId(timeTable.getId())
                 .lectures(lectureTimeMap.entrySet().stream()
@@ -51,16 +52,20 @@ class MyTimeTableLecture {
     @Schema(example = "일반 강의", description = "강의 형태")
     private String lectureFormat;
 
-    List<LectureTime> lectureTimes;
+    @Schema(example = "#ffffff", description = "강의 색상코드")
+    private String lectureColor;
 
-    public static MyTimeTableLecture of(DgLecture lecture, List<DgLectureTime> lectureTimes) {
+    private List<LectureTime> lectureTimes;
+
+    public static MyTimeTableLecture of(DgLecture lecture, LectureTimeColor lectureTimes) {
         return MyTimeTableLecture.builder()
                 .lectureId(lecture.getId())
                 .lectureName(lecture.getCourseName())
                 .instructorName(lecture.getInstructor())
                 .classRoom(lecture.getClassroom())
                 .lectureFormat(lecture.getCourseFormat())
-                .lectureTimes(lectureTimes.stream().map(LectureTime::of).toList())
+                .lectureColor(lectureTimes.getLectureColor())
+                .lectureTimes(lectureTimes.getDgLectureTime().stream().map(LectureTime::of).toList())
                 .build();
     }
 }

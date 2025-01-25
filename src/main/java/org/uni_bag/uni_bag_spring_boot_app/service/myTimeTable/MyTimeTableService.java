@@ -33,12 +33,15 @@ public class MyTimeTableService {
         TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
         List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
 
-        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
+        Map<DgLecture, LectureTimeColor> lecturesTimeMap = new HashMap<>();
 
         for (TimeTableLecture timeTableLecture : lectures) {
             lecturesTimeMap.put(
                     timeTableLecture.getLecture(),
-                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
+                    new LectureTimeColor(
+                            dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture()),
+                            timeTableLecture.getLectureColor()
+                    )
             );
         }
 
