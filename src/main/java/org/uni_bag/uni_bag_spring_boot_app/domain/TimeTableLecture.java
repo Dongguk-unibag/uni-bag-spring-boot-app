@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.LectureColor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,10 +23,14 @@ public class TimeTableLecture {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private TimeTable timeTable;
 
-    public static TimeTableLecture of(TimeTable timeTable, DgLecture lecture){
+    @Column(nullable = false)
+    private String lectureColor;
+
+    public static TimeTableLecture of(TimeTable timeTable, LectureColor lectureColor) {
         return TimeTableLecture.builder()
                 .timeTable(timeTable)
-                .lecture(lecture)
+                .lecture(lectureColor.getLecture())
+                .lectureColor(lectureColor.getLectureColor())
                 .build();
     }
 }

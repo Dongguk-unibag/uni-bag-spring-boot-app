@@ -14,6 +14,5 @@ public class MyTimeTableScheduleCreateRequestDto {
     @NotNull(message = "시간표 아이디가 필요합니다.")
     private Long timeTableId;
 
-    @Schema(example = "[1, 2, 3]", description = "추가할 강의 아이디")
-    private List<Long> lectureIds;
+    private List<NewLectureScheduleDto> newLectureSchedules;
 }

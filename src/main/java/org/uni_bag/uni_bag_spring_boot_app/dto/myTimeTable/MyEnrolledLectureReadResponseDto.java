@@ -19,7 +19,7 @@ public class MyEnrolledLectureReadResponseDto {
     public static MyEnrolledLectureReadResponseDto of(List<TimeTableLecture> timeTableLectures){
         return MyEnrolledLectureReadResponseDto.builder()
                 .enrolledLectures(timeTableLectures.stream()
-                        .map(timeTableLecture -> MyEnrolledLecture.of(timeTableLecture.getLecture())).toList()
+                        .map(MyEnrolledLecture::of).toList()
                 ).build();
     }
 }
@@ -34,10 +34,16 @@ class MyEnrolledLecture {
     @Schema(example = "알고리즘", description = "수강중인 강의 이름")
     private String lectureName;
 
-    public static MyEnrolledLecture of(DgLecture dgLecture){
+    @Schema(example = "#ffffff", description = "강의 색상 코드")
+    private String lectureColor;
+
+    public static MyEnrolledLecture of(TimeTableLecture timeTableLecture){
+        DgLecture lecture = timeTableLecture.getLecture();
+
         return MyEnrolledLecture.builder()
-                .lectureId(dgLecture.getId())
-                .lectureName(dgLecture.getCourseName())
+                .lectureId(lecture.getId())
+                .lectureName(lecture.getCourseName())
+                .lectureColor(timeTableLecture.getLectureColor())
                 .build();
     }
 }

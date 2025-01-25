@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.uni_bag.uni_bag_spring_boot_app.domain.DgLecture;
 import org.uni_bag.uni_bag_spring_boot_app.domain.TimeTable;
+import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.LectureColor;
 
 import java.util.List;
 
@@ -16,30 +17,13 @@ public class MyTimeTableScheduleCreateResponseDto {
     @Schema(example = "1", description = "시간표 아이디")
     private Long timeTableId;
 
-    private List<NewLecture> lectures;
+    private List<NewLectureScheduleDto> lectures;
 
-    public static MyTimeTableScheduleCreateResponseDto fromEntity(TimeTable timeTable, List<DgLecture> lectures){
+    public static MyTimeTableScheduleCreateResponseDto fromEntity(TimeTable timeTable, List<LectureColor> lectures){
         return MyTimeTableScheduleCreateResponseDto.builder()
                 .timeTableId(timeTable.getId())
-                .lectures(lectures.stream().map(dgLecture -> NewLecture.of(dgLecture.getId(), dgLecture.getCourseName())).toList())
+                .lectures(lectures.stream().map(NewLectureScheduleDto::of).toList())
                 .build();
     }
 }
 
-@Getter
-@AllArgsConstructor
-@Builder
-class NewLecture {
-    @Schema(example = "1", description = "강의 아이디")
-    private Long lectureId;
-
-    @Schema(example = "알고리즘", description = "강의 이름")
-    private String lectureName;
-
-    public static NewLecture of(Long lectureId, String lectureName){
-        return NewLecture.builder()
-                .lectureId(lectureId)
-                .lectureName(lectureName)
-                .build();
-    }
-}
