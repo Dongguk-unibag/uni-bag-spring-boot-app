@@ -98,7 +98,7 @@ public class AuthService {
 
         // 토큰 재발행
         String reIssuedAccessToken = jwtTokenProvider.reIssueAccessToken(resolvedAccessToken);
-        redisService.delete(resolvedAccessToken);
+        redisService.delete(resolvedRefreshToken);
         redisService.save(resolvedRefreshToken, reIssuedAccessToken);
         return TokenReIssueDto.of(reIssuedAccessToken);
 
