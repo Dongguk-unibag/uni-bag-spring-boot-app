@@ -3,6 +3,8 @@ package org.uni_bag.uni_bag_spring_boot_app.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -59,4 +61,7 @@ public class DgLecture {
     private int year;
 
     private int semester;
+
+    @OneToMany(mappedBy = "dgLecture")
+    private List<DgLectureTime> dgLectureTimes;
 }
