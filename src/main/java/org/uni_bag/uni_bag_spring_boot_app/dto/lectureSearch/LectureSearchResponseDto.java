@@ -42,79 +42,70 @@ class FoundLectureWithTimesDto {
 @AllArgsConstructor
 @Builder
 class FoundLectureInfo {
-    @Schema(description = "강의 아이디")
+    @Schema(example = "26", description = "강의 아이디")
     private Long lectureId;
 
-    @Schema(description = "교과과정")
+    @Schema(example = "전공", description = "교과과정")
     private String curriculum;
 
-    @Schema(description = "영역")
+    @Schema(example = "기초", description = "영역")
     private String area;
 
-    @Schema(description = "대상학년")
+    @Schema(example = "1학년", description = "대상학년")
     private String targetGrade;
 
-    @Schema(description = "학수번호")
+    @Schema(example = "BUC10222-01", description = "학수번호")
     private String courseCode;
 
-    @Schema(description = "교과목명")
+    @Schema(example = "불교신행과문화", description = "교과목명")
     private String courseName;
 
-    @Schema(description = "담당교원")
+    @Schema(example = "홍길동", description = "담당교원")
     private String instructor;
 
-    @Schema(description = "요일/교시")
-    private String dayPeriod;
-
-    @Schema(description = "강의실")
+    @Schema(example = "D403", description = "강의실")
     private String classroom;
 
-    @Schema(description = "학점")
+    @Schema(example = "", description = "학점")
     private Float credits;
 
-    @Schema(description = "이론")
+    @Schema(example = "3.0", description = "이론")
     private Float theory;
 
-    @Schema(description = "실습")
+    @Schema(example = "0.0", description = "실습")
     private Float practical;
 
-    @Schema(description = "공학인증")
+    @Schema(example = "???", description = "공학인증")
     private String engineeringAccreditation;
 
-    @Schema(description = "강의유형")
+    @Schema(example = "이론", description = "강의유형")
     private String courseType;
 
-    @Schema(description = "강의형태")
+    @Schema(example = "일반강의", description = "강의형태")
     private String courseFormat;
 
-    @Schema(description = "성적평가방법")
+    @Schema(example = "상대평가", description = "성적평가방법")
     private String evaluationMethod;
 
-    @Schema(description = "성적등급유형")
+    @Schema(example = "GRADE", description = "성적등급유형")
     private String gradeType;
 
-    @Schema(description = "이수구분")
+    @Schema(example = "전공", description = "이수구분")
     private String completionType;
 
-    @Schema(description = "개설대학")
-    private String offeringCollege;
-
-    @Schema(description = "개설학과")
-    private String offeringDepartment;
-
-    @Schema(description = "개설전공")
+    @Schema(example = "불교문화대학-불교학부-불교문화콘텐츠전공", description = "개설대학-학과-전공")
     private String offeringMajor;
 
-    @Schema(description = "팀티칭")
+    @Schema(example = "팀티칭", description = "팀티칭")
     private String teamTeaching;
 
-    @Schema(description = "비고")
+    @Schema(example = "타전공생 수강제한", description = "비고")
     private String remarks;
 
-    @Schema(description = "년도")
+    @Schema(example = "2024", description = "년도")
     private int year;
 
-    @Schema(description = "학기")
+    @Schema(example = "3", description = "학기")
     private int semester;
 
     public static FoundLectureInfo from(DgLecture lecture) {
@@ -131,15 +122,20 @@ class FoundLectureInfo {
                 .evaluationMethod(lecture.getEvaluationMethod())
                 .gradeType(lecture.getGradeType())
                 .completionType(lecture.getCompletionType())
-                .offeringCollege(lecture.getOfferingCollege())
-                .offeringDepartment(lecture.getOfferingDepartment())
-                .offeringMajor(lecture.getOfferingMajor())
+                .offeringMajor(lecture.getOfferingCollege() + "-" + lecture.getOfferingDepartment() + "-" +  lecture.getOfferingMajor())
                 .teamTeaching(lecture.getTeamTeaching())
                 .remarks(lecture.getRemarks())
                 .year(lecture.getYear())
                 .semester(lecture.getSemester())
                 .theory(lecture.getTheory())
                 .practical(lecture.getPractical())
+                .classroom(lecture.getClassroom())
+                .credits(lecture.getCredits())
+                .engineeringAccreditation(lecture.getEngineeringAccreditation())
+                .teamTeaching(lecture.getTeamTeaching())
+                .remarks(lecture.getRemarks())
+                .year(lecture.getYear())
+                .semester(lecture.getSemester())
                 .build();
     }
 }
@@ -148,10 +144,13 @@ class FoundLectureInfo {
 @AllArgsConstructor
 @Builder
 class FoundLectureTimeInfo {
+    @Schema(example = "수", description = "강의 요일")
     private String dayOfWeek;
 
+    @Schema(example = "09:00:00", description = "강의 시작시간")
     private Time startTime;
 
+    @Schema(example = "12:00:00", description = "강의 종료시간")
     private Time endTime;
 
     public static FoundLectureTimeInfo from(DgLectureTime lectureTime) {
