@@ -109,6 +109,9 @@ public enum HttpErrorCode {
     SameTableOrderError(
             HttpStatus.CONFLICT, "현재 시간표의 순위가 변경하고자 하는 순위와 동일합니다."
     ),
+    NoPrimaryTimeTableError(
+            HttpStatus.NOT_FOUND, "사용자가 설정한 primary 시간표가 없습니다."
+    ),
 
     // Friend
     AlreadyExistFollowError(
