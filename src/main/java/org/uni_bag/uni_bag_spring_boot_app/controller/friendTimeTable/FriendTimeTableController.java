@@ -55,4 +55,18 @@ public class FriendTimeTableController {
         FriendTimeTableReadResponseDto responseDto = friendTimeTableService.getFriendTimeTable(user, timeTableId);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "친구 primary 시간표 조회")
+    @JwtTokenErrorExample
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
+            @ApiErrorCodeExample(value = HttpErrorCode.AccessDeniedError, description = "서로 친구 관계가 아닐 경우 발생"),
+    })
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = FriendTimeTableListReadResponseDto.class)))
+    @GetMapping("/primary")
+    public ResponseEntity<FriendTimeTableReadResponseDto> getFriendPrimaryTimeTable(@AuthenticationPrincipal User user,
+                                                                                    @Parameter(description = "친구 아이디", required = true, example = "1") @RequestParam Long friendId) {
+        FriendTimeTableReadResponseDto responseDto = friendTimeTableService.getFriendPrimaryTimeTable(user, friendId);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

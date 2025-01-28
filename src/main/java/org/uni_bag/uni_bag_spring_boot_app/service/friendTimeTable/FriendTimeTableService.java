@@ -57,4 +57,27 @@ public class FriendTimeTableService {
         List<TimeTable> foundTimeTables = timeTableRepository.findAllByUser(followee);
         return FriendTimeTableListReadResponseDto.fromEntity(followee, foundTimeTables);
     }
+
+    public FriendTimeTableReadResponseDto getFriendPrimaryTimeTable(User follower, Long followeeId) {
+        User followee = userRepository.findById(followeeId).orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
+
+        if(!followRepository.existsByFollowerAndFollowee(follower, followee)) {
+            throw new HttpErrorException(HttpErrorCode.AccessDeniedError);
+        }
+
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(followee, 1).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
+
+        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
+
+        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
+
+        for (TimeTableLecture timeTableLecture : lectures) {
+            lecturesTimeMap.put(
+                    timeTableLecture.getLecture(),
+                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
+            );
+        }
+
+        return FriendTimeTableReadResponseDto.of(foundTimeTable.getUser(), foundTimeTable, lecturesTimeMap);
+    }
 }
