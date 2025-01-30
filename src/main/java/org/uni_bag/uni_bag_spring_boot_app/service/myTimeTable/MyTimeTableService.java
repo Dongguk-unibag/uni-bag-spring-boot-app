@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.*;
+import org.uni_bag.uni_bag_spring_boot_app.dto.friendTimeTable.FriendTimeTableReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.*;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.DgLectureTimeRepository;
@@ -87,5 +88,39 @@ public class MyTimeTableService {
         List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
 
         return MyEnrolledLectureReadResponseDto.of(lectures);
+    }
+
+    public MyTimetableGetResponseDto getMyPrimaryTimetable(User user) {
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 1).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
+
+        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
+
+        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
+
+        for (TimeTableLecture timeTableLecture : lectures) {
+            lecturesTimeMap.put(
+                    timeTableLecture.getLecture(),
+                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
+            );
+        }
+
+        return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
+    }
+
+    public MyTimetableGetResponseDto getMySecondaryTimetable(User user) {
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 2).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSecondaryTimeTableError));
+
+        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
+
+        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
+
+        for (TimeTableLecture timeTableLecture : lectures) {
+            lecturesTimeMap.put(
+                    timeTableLecture.getLecture(),
+                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
+            );
+        }
+
+        return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
     }
 }
