@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.uni_bag.uni_bag_spring_boot_app.domain.DgLecture;
-import org.uni_bag.uni_bag_spring_boot_app.domain.DgLectureTime;
 import org.uni_bag.uni_bag_spring_boot_app.domain.TimeTable;
 import org.uni_bag.uni_bag_spring_boot_app.dto.LectureDto;
+import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.LectureTimeColor;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class MyTimetableGetResponseDto {
     MyTimeTableInfoDto timeTableInfo;
     List<LectureDto> lectures;
 
-    public static MyTimetableGetResponseDto of(TimeTable timeTable, Map<DgLecture, List<DgLectureTime>> lecturesTimeMap){
+    public static MyTimetableGetResponseDto of(TimeTable timeTable, Map<DgLecture, LectureTimeColor> lecturesTimeMap){
         return MyTimetableGetResponseDto.builder()
                 .timeTableInfo(MyTimeTableInfoDto.from(timeTable))
                 .lectures(lecturesTimeMap.entrySet().stream()

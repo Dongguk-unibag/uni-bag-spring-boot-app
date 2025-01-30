@@ -9,6 +9,7 @@ import org.uni_bag.uni_bag_spring_boot_app.domain.DgLectureTime;
 import org.uni_bag.uni_bag_spring_boot_app.domain.TimeTable;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.dto.LectureDto;
+import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.LectureTimeColor;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class FriendTimeTableReadResponseDto {
 
     List<LectureDto> lectures;
 
-    public static FriendTimeTableReadResponseDto of(User friend, TimeTable timeTable, Map<DgLecture, List<DgLectureTime>> lectureTimeMap) {
+    public static FriendTimeTableReadResponseDto of(User friend, TimeTable timeTable, Map<DgLecture, LectureTimeColor> lectureTimeMap) {
         return FriendTimeTableReadResponseDto.builder()
                 .friendId(friend.getId())
                 .friendName(friend.getName())
