@@ -112,6 +112,10 @@ public enum HttpErrorCode {
     NoPrimaryTimeTableError(
             HttpStatus.NOT_FOUND, "사용자가 설정한 primary 시간표가 없습니다."
     ),
+    NoSecondaryTimeTableError(
+            HttpStatus.NOT_FOUND, "사용자가 설정한 secondary 시간표가 없습니다."
+    ),
+
 
     // Friend
     AlreadyExistFollowError(

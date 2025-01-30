@@ -76,6 +76,18 @@ public class MyTimeTableController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "secondary 강의 시간표 조회")
+    @JwtTokenErrorExample()
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
+    })
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MyTimetableGetResponseDto.class)))
+    @GetMapping("/secondary")
+    public ResponseEntity<MyTimetableGetResponseDto> getMySecondaryTimetable(@AuthenticationPrincipal User user) {
+        MyTimetableGetResponseDto responseDto = myTimeTableService.getMySecondaryTimetable(user);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
     @Operation(summary = "개인 시간표 추가")
     @JwtTokenErrorExample()
     @ApiErrorCodeExamples(value = {

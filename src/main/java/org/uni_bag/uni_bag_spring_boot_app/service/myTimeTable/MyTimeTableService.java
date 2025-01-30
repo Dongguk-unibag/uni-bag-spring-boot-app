@@ -106,4 +106,21 @@ public class MyTimeTableService {
 
         return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
     }
+
+    public MyTimetableGetResponseDto getMySecondaryTimetable(User user) {
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 2).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSecondaryTimeTableError));
+
+        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
+
+        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
+
+        for (TimeTableLecture timeTableLecture : lectures) {
+            lecturesTimeMap.put(
+                    timeTableLecture.getLecture(),
+                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
+            );
+        }
+
+        return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
+    }
 }
