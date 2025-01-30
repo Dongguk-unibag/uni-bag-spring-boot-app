@@ -11,6 +11,7 @@ import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.DgLectureTimeRepository;
 import org.uni_bag.uni_bag_spring_boot_app.repository.TimeTableLectureRepository;
 import org.uni_bag.uni_bag_spring_boot_app.repository.TimeTableRepository;
+import org.uni_bag.uni_bag_spring_boot_app.service.timetable.TimetableService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,32 +22,47 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 public class MyTimeTableService {
+    private final TimetableService timetableService;
+
     private final TimeTableRepository timeTableRepository;
     private final TimeTableLectureRepository timeTableLectureRepository;
-    private final DgLectureTimeRepository dgLectureTimeRepository;
 
     public MyTimeTableListReadResponseDto getMyTimeTableList(User user) {
         List<TimeTable> foundTimeTables = timeTableRepository.findAllByUser(user);
         return MyTimeTableListReadResponseDto.fromEntity(foundTimeTables);
     }
 
-    public MyTimeTableReadResponseDto getMyTimeTable(User user, Long timeTableId) {
-        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+    public MyEnrolledLectureReadResponseDto getMyEnrolledLecture(User user, Long timeTableId) {
+        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+
         List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
 
-        Map<DgLecture, LectureTimeColor> lecturesTimeMap = new HashMap<>();
+        return MyEnrolledLectureReadResponseDto.of(lectures);
+    }
 
-        for (TimeTableLecture timeTableLecture : lectures) {
-            lecturesTimeMap.put(
-                    timeTableLecture.getLecture(),
-                    new LectureTimeColor(
-                            dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture()),
-                            timeTableLecture.getLectureColor()
-                    )
-            );
-        }
+    public MyTimeTableReadResponseDto getMyTimeTableById(User user, Long timeTableId) {
+        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+
+        Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
 
         return MyTimeTableReadResponseDto.of(foundTimeTable, lecturesTimeMap);
+    }
+
+    public MyTimetableGetResponseDto getMyPrimaryTimetable(User user) {
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 1).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
+
+        Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
+
+        return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
+    }
+
+    public MyTimetableGetResponseDto getMySecondaryTimetable(User user) {
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 2).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSecondaryTimeTableError));
+
+        Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
+
+        return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
     }
 
     public MyTimeTableCreateResponseDto createMyTimeTable(User user, MyTimeTableCreateRequestDto requestDto){
@@ -79,48 +95,5 @@ public class MyTimeTableService {
         foundTimeTable.updateOrder(requestDto.getOrder());
 
         return MyTimeTableOrderUpdateResponseDto.fromEntity(foundTimeTable);
-    }
-
-    public MyEnrolledLectureReadResponseDto getMyEnrolledLecture(User user, Long timeTableId) {
-        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user)
-                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
-
-        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
-
-        return MyEnrolledLectureReadResponseDto.of(lectures);
-    }
-
-    public MyTimetableGetResponseDto getMyPrimaryTimetable(User user) {
-        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 1).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
-
-        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
-
-        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
-
-        for (TimeTableLecture timeTableLecture : lectures) {
-            lecturesTimeMap.put(
-                    timeTableLecture.getLecture(),
-                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
-            );
-        }
-
-        return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
-    }
-
-    public MyTimetableGetResponseDto getMySecondaryTimetable(User user) {
-        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 2).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSecondaryTimeTableError));
-
-        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
-
-        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
-
-        for (TimeTableLecture timeTableLecture : lectures) {
-            lecturesTimeMap.put(
-                    timeTableLecture.getLecture(),
-                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
-            );
-        }
-
-        return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
     }
 }

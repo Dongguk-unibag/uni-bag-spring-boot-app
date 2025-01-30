@@ -7,12 +7,11 @@ import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.*;
 import org.uni_bag.uni_bag_spring_boot_app.dto.friendTimeTable.FriendTimeTableListReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.friendTimeTable.FriendTimeTableReadResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableListReadResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.*;
+import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.LectureTimeColor;
+import org.uni_bag.uni_bag_spring_boot_app.service.timetable.TimetableService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,32 +19,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional
 public class FriendTimeTableService {
+    private final TimetableService timetableService;
+
     private final UserRepository userRepository;
     private final TimeTableRepository timeTableRepository;
-    private final TimeTableLectureRepository timeTableLectureRepository;
-    private final DgLectureTimeRepository dgLectureTimeRepository;
     private final FollowRepository followRepository;
-
-    public FriendTimeTableReadResponseDto getFriendTimeTable(User follower, Long timeTableId) {
-        TimeTable foundTimeTable = timeTableRepository.findById(timeTableId).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
-
-        if(!followRepository.existsByFollowerAndFollowee(follower, foundTimeTable.getUser())) {
-            throw new HttpErrorException(HttpErrorCode.AccessDeniedError);
-        }
-
-        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
-
-        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
-
-        for (TimeTableLecture timeTableLecture : lectures) {
-            lecturesTimeMap.put(
-                    timeTableLecture.getLecture(),
-                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
-            );
-        }
-
-        return FriendTimeTableReadResponseDto.of(foundTimeTable.getUser(), foundTimeTable, lecturesTimeMap);
-    }
 
     public FriendTimeTableListReadResponseDto getFriendTimeTableList(User follower, Long followeeId) {
         User followee = userRepository.findById(followeeId).orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
@@ -58,6 +36,18 @@ public class FriendTimeTableService {
         return FriendTimeTableListReadResponseDto.fromEntity(followee, foundTimeTables);
     }
 
+    public FriendTimeTableReadResponseDto getFriendTimeTableById(User follower, Long timeTableId) {
+        TimeTable foundTimeTable = timeTableRepository.findById(timeTableId).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+
+        if(!followRepository.existsByFollowerAndFollowee(follower, foundTimeTable.getUser())) {
+            throw new HttpErrorException(HttpErrorCode.AccessDeniedError);
+        }
+
+        Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
+
+        return FriendTimeTableReadResponseDto.of(foundTimeTable.getUser(), foundTimeTable, lecturesTimeMap);
+    }
+
     public FriendTimeTableReadResponseDto getFriendPrimaryTimeTable(User follower, Long followeeId) {
         User followee = userRepository.findById(followeeId).orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
 
@@ -67,16 +57,7 @@ public class FriendTimeTableService {
 
         TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(followee, 1).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
 
-        List<TimeTableLecture> lectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable);
-
-        Map<DgLecture, List<DgLectureTime>> lecturesTimeMap = new HashMap<>();
-
-        for (TimeTableLecture timeTableLecture : lectures) {
-            lecturesTimeMap.put(
-                    timeTableLecture.getLecture(),
-                    dgLectureTimeRepository.findAllByDgLecture(timeTableLecture.getLecture())
-            );
-        }
+        Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
 
         return FriendTimeTableReadResponseDto.of(foundTimeTable.getUser(), foundTimeTable, lecturesTimeMap);
     }

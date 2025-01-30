@@ -35,10 +35,10 @@ public class MyTimeTableController {
     })
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MyTimeTableReadResponseDto.class)))
     @GetMapping("/{timeTableId}")
-    public ResponseEntity<MyTimeTableReadResponseDto> getMyTimeTable(@AuthenticationPrincipal User user,
+    public ResponseEntity<MyTimeTableReadResponseDto> getMyTimeTableById(@AuthenticationPrincipal User user,
                                                                      @Parameter(description = "조회할 시간표 아이디", required = true, example = "1")
                                                                      @PathVariable Long timeTableId) {
-        MyTimeTableReadResponseDto responseDto = myTimeTableService.getMyTimeTable(user, timeTableId);
+        MyTimeTableReadResponseDto responseDto = myTimeTableService.getMyTimeTableById(user, timeTableId);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

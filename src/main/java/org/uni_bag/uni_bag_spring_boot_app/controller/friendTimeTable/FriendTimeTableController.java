@@ -48,11 +48,11 @@ public class FriendTimeTableController {
             @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
             @ApiErrorCodeExample(value = HttpErrorCode.AccessDeniedError, description = "서로 친구 관계가 아닐 경우 발생"),
     })
-    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = FriendTimeTableListReadResponseDto.class)))
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = FriendTimeTableReadResponseDto.class)))
     @GetMapping("/{timeTableId}")
-    public ResponseEntity<FriendTimeTableReadResponseDto> getFriendTimeTable(@AuthenticationPrincipal User user,
+    public ResponseEntity<FriendTimeTableReadResponseDto> getFriendTimeTableById(@AuthenticationPrincipal User user,
                                                                              @Parameter(description = "친구 시간표 아이디", required = true, example = "1")  @PathVariable Long timeTableId) {
-        FriendTimeTableReadResponseDto responseDto = friendTimeTableService.getFriendTimeTable(user, timeTableId);
+        FriendTimeTableReadResponseDto responseDto = friendTimeTableService.getFriendTimeTableById(user, timeTableId);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
@@ -62,7 +62,7 @@ public class FriendTimeTableController {
             @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
             @ApiErrorCodeExample(value = HttpErrorCode.AccessDeniedError, description = "서로 친구 관계가 아닐 경우 발생"),
     })
-    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = FriendTimeTableListReadResponseDto.class)))
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = FriendTimeTableReadResponseDto.class)))
     @GetMapping("/primary")
     public ResponseEntity<FriendTimeTableReadResponseDto> getFriendPrimaryTimeTable(@AuthenticationPrincipal User user,
                                                                                     @Parameter(description = "친구 아이디", required = true, example = "1") @RequestParam Long friendId) {
