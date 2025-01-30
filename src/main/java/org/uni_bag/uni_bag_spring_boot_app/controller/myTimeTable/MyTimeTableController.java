@@ -64,6 +64,18 @@ public class MyTimeTableController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "primary 강의 시간표 조회")
+    @JwtTokenErrorExample()
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
+    })
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MyTimetableGetResponseDto.class)))
+    @GetMapping("/primary")
+    public ResponseEntity<MyTimetableGetResponseDto> getMyPrimaryTimetable(@AuthenticationPrincipal User user) {
+        MyTimetableGetResponseDto responseDto = myTimeTableService.getMyPrimaryTimetable(user);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
     @Operation(summary = "개인 시간표 추가")
     @JwtTokenErrorExample()
     @ApiErrorCodeExamples(value = {
@@ -72,7 +84,7 @@ public class MyTimeTableController {
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyTimeTableCreateResponseDto.class)))
     @PostMapping
     public ResponseEntity<MyTimeTableCreateResponseDto> createTimeTable(@AuthenticationPrincipal User user,
-                                                                        @Valid @RequestBody MyTimeTableCreateRequestDto requestDto){
+                                                                        @Valid @RequestBody MyTimeTableCreateRequestDto requestDto) {
         MyTimeTableCreateResponseDto responseDto = myTimeTableService.createMyTimeTable(user, requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
@@ -88,7 +100,7 @@ public class MyTimeTableController {
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyTimeTableOrderUpdateResponseDto.class)))
     @PatchMapping("/order")
     public ResponseEntity<MyTimeTableOrderUpdateResponseDto> updateMyTimeTableOrder(@AuthenticationPrincipal User user,
-                                                                               @Valid @RequestBody MyTimeTableOrderUpdateRequestDto requestDto){
+                                                                                    @Valid @RequestBody MyTimeTableOrderUpdateRequestDto requestDto) {
         MyTimeTableOrderUpdateResponseDto responseDto = myTimeTableService.updateMyTimeTableOrder(user, requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
