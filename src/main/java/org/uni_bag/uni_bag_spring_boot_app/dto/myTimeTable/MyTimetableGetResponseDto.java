@@ -44,15 +44,15 @@ class MyTimeTableInfoDto {
     @Schema(example = "3", description = "학기")
     private int semester;
 
-    @Schema(example = "1", description = "시간표 순위")
-    private int tableOrder;
+    @Schema(example = "true", description = "primary 시간표 여부")
+    private boolean isPrimary;
 
     public static MyTimeTableInfoDto from(TimeTable timeTable){
         return MyTimeTableInfoDto.builder()
                 .timeTableId(timeTable.getId())
                 .year(timeTable.getYear())
                 .semester(timeTable.getSemester())
-                .tableOrder(timeTable.getTableOrder())
+                .isPrimary(timeTable.isPrimary())
                 .build();
     }
 }

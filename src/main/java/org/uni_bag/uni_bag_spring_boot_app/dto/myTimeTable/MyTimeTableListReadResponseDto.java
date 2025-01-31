@@ -35,15 +35,15 @@ class TimeTableInfo{
     @Schema(example = "3", description = "학기(1: 봄 학기, 2: 여름 계절학기, 3: 가을 학기, 4: 겨울 계절학기)")
     private int semester;
 
-    @Schema(example = "1", description = "시간표 순위(1: Primary 시간표, 2: Secondary 시간표, 0: 순위 없음)")
-    private int order;
+    @Schema(example = "true", description = "primary 시간표 여부")
+    private boolean isPrimary;
 
     public static TimeTableInfo of(TimeTable timeTable){
         return TimeTableInfo.builder()
                 .timeTableId(timeTable.getId())
                 .year(timeTable.getYear())
                 .semester(timeTable.getSemester())
-                .order(timeTable.getTableOrder())
+                .isPrimary(timeTable.isPrimary())
                 .build();
     }
 }

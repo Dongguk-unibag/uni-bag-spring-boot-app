@@ -15,6 +15,7 @@ import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.dto.friendTimeTable.FriendTimeTableListReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.friendTimeTable.FriendTimeTableReadResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyPrimaryTimeTableUpdateResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserInfoResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.service.friendTimeTable.FriendTimeTableService;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExample;
@@ -67,6 +68,20 @@ public class FriendTimeTableController {
     public ResponseEntity<FriendTimeTableReadResponseDto> getFriendPrimaryTimeTable(@AuthenticationPrincipal User user,
                                                                                     @Parameter(description = "친구 아이디", required = true, example = "1") @RequestParam Long friendId) {
         FriendTimeTableReadResponseDto responseDto = friendTimeTableService.getFriendPrimaryTimeTable(user, friendId);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+
+    @Operation(summary = "secondary 친구 시간표 조회")
+    @JwtTokenErrorExample
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
+            @ApiErrorCodeExample(value = HttpErrorCode.AccessDeniedError, description = "서로 친구 관계가 아닐 경우 발생"),
+    })
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = FriendTimeTableReadResponseDto.class)))
+    @GetMapping("/secondary")
+    public ResponseEntity<FriendTimeTableReadResponseDto> getSecondaryFriendTimeTable(@AuthenticationPrincipal User user) {
+        FriendTimeTableReadResponseDto responseDto = friendTimeTableService.getSecondaryFriendTimeTable(user);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
