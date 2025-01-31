@@ -13,6 +13,7 @@ import org.uni_bag.uni_bag_spring_boot_app.repository.FollowRepository;
 import org.uni_bag.uni_bag_spring_boot_app.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class FollowService {
         User followee = userRepository.findById(followRequestDto.getFolloweeId())
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
 
-        if(followRepository.existsByFollowerAndFollowee(follower, followee)){
+        if (followRepository.existsByFollowerAndFollowee(follower, followee)) {
             throw new HttpErrorException(HttpErrorCode.AlreadyExistFollowError);
         }
 
@@ -49,5 +50,31 @@ public class FollowService {
     public FolloweeListReadResponseDto getFolloweeList(User follower) {
         List<Follow> follows = followRepository.findAllByFollower(follower);
         return FolloweeListReadResponseDto.of(follows);
+    }
+
+    public SecondaryFriendUpdateResponseDto updateSecondaryFriend(User user, Long friendId) {
+        User followee = userRepository.findById(friendId)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
+
+        Follow foundFollow = followRepository.findByFollowerAndFollowee(user, followee)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchFollowError));
+
+        if (foundFollow.isSecondaryFriend()) {
+            throw new HttpErrorException(HttpErrorCode.AlreadySecondaryFriendError);
+        }
+
+        Optional<Follow> secondaryFriendOptional = followRepository.findByFollowerAndIsSecondaryFriend(user, true);
+        secondaryFriendOptional.ifPresent(follow -> follow.updateSecondaryFriend(false));
+        foundFollow.updateSecondaryFriend(true);
+        return SecondaryFriendUpdateResponseDto.from(foundFollow);
+    }
+
+    public SecondaryFriendUpdateResponseDto deleteSecondaryFriend(User user) {
+        Follow secondaryFriend = followRepository.findByFollowerAndIsSecondaryFriend(user, true)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSecondaryFriendError));
+
+        secondaryFriend.updateSecondaryFriend(false);
+        return SecondaryFriendUpdateResponseDto.from(secondaryFriend);
+
     }
 }

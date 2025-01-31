@@ -2,6 +2,7 @@ package org.uni_bag.uni_bag_spring_boot_app.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,18 +23,19 @@ public class TimeTable {
     @Column(nullable = false)
     private int semester;
 
-    private int tableOrder;
+    @ColumnDefault("false")
+    @Builder.Default()
+    private boolean isPrimary = false;
 
     public static TimeTable of(int year, int semester, User user, int tableOrder) {
         return TimeTable.builder()
                 .year(year)
                 .semester(semester)
                 .user(user)
-                .tableOrder(tableOrder)
                 .build();
     }
 
-    public void updateOrder(int order) {
-        this.tableOrder = order;
+    public void updatePrimary(boolean isPrimary) {
+        this.isPrimary = isPrimary;
     }
 }

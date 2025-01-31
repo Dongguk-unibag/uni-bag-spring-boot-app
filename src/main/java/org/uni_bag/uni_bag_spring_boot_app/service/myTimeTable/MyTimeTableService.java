@@ -5,15 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.*;
-import org.uni_bag.uni_bag_spring_boot_app.dto.friendTimeTable.FriendTimeTableReadResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.*;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
-import org.uni_bag.uni_bag_spring_boot_app.repository.DgLectureTimeRepository;
 import org.uni_bag.uni_bag_spring_boot_app.repository.TimeTableLectureRepository;
 import org.uni_bag.uni_bag_spring_boot_app.repository.TimeTableRepository;
 import org.uni_bag.uni_bag_spring_boot_app.service.timetable.TimetableService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,16 +46,8 @@ public class MyTimeTableService {
         return MyTimeTableReadResponseDto.of(foundTimeTable, lecturesTimeMap);
     }
 
-    public MyTimetableGetResponseDto getMyPrimaryTimetable(User user) {
-        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 1).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
-
-        Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
-
-        return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
-    }
-
-    public MyTimetableGetResponseDto getMySecondaryTimetable(User user) {
-        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(user, 2).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSecondaryTimeTableError));
+    public MyTimetableGetResponseDto getMyPrimaryTimeTable(User user) {
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndIsPrimary(user, true).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
 
         Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
 
@@ -82,18 +71,25 @@ public class MyTimeTableService {
         return MyTimeTableDeleteResponseDto.of(foundTimeTable.getId());
     }
 
-    public MyTimeTableOrderUpdateResponseDto updateMyTimeTableOrder(User user, MyTimeTableOrderUpdateRequestDto requestDto) {
-        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(requestDto.getTimeTableId(), user)
+    public MyPrimaryTimeTableUpdateResponseDto updateMyPrimaryTimeTable(User user, Long timeTableId) {
+        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user)
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
 
-        if(foundTimeTable.getTableOrder() == requestDto.getOrder()){
-            throw new HttpErrorException(HttpErrorCode.SameTableOrderError);
+        if(foundTimeTable.isPrimary()){
+            throw new HttpErrorException(HttpErrorCode.AlreadyPrimaryTimeTableError);
         }
 
-        Optional<TimeTable> originalOrderTimeTableOptional = timeTableRepository.findByUserAndTableOrder(user, requestDto.getOrder());
-        originalOrderTimeTableOptional.ifPresent(timeTable -> timeTable.updateOrder(0));
-        foundTimeTable.updateOrder(requestDto.getOrder());
+        Optional<TimeTable> originalPrimaryTimeTableOptional = timeTableRepository.findByUserAndIsPrimary(user, true);
+        originalPrimaryTimeTableOptional.ifPresent(timeTable -> timeTable.updatePrimary(false));
+        foundTimeTable.updatePrimary(true);
 
-        return MyTimeTableOrderUpdateResponseDto.fromEntity(foundTimeTable);
+        return MyPrimaryTimeTableUpdateResponseDto.fromEntity(foundTimeTable);
+    }
+
+    public MyPrimaryTimeTableUpdateResponseDto deleteMyPrimaryTimeTable(User user) {
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndIsPrimary(user, true).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
+        foundTimeTable.updatePrimary(false);
+
+        return MyPrimaryTimeTableUpdateResponseDto.fromEntity(foundTimeTable);
     }
 }

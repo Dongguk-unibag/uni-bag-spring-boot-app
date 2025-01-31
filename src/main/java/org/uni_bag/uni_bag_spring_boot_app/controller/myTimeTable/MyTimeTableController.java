@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.*;
-import org.uni_bag.uni_bag_spring_boot_app.dto.user.UserInfoResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.MyTimeTableService;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExample;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExamples;
@@ -72,19 +71,7 @@ public class MyTimeTableController {
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MyTimetableGetResponseDto.class)))
     @GetMapping("/primary")
     public ResponseEntity<MyTimetableGetResponseDto> getMyPrimaryTimetable(@AuthenticationPrincipal User user) {
-        MyTimetableGetResponseDto responseDto = myTimeTableService.getMyPrimaryTimetable(user);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
-    }
-
-    @Operation(summary = "secondary 강의 시간표 조회")
-    @JwtTokenErrorExample()
-    @ApiErrorCodeExamples(value = {
-            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
-    })
-    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MyTimetableGetResponseDto.class)))
-    @GetMapping("/secondary")
-    public ResponseEntity<MyTimetableGetResponseDto> getMySecondaryTimetable(@AuthenticationPrincipal User user) {
-        MyTimetableGetResponseDto responseDto = myTimeTableService.getMySecondaryTimetable(user);
+        MyTimetableGetResponseDto responseDto = myTimeTableService.getMyPrimaryTimeTable(user);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
@@ -101,19 +88,30 @@ public class MyTimeTableController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "개인 시간표 순위 수정",
-            description = "특정 시간표를 Primary 혹은 Secondary 시간표로 지정할 수 있습니다."
-    )
+    @Operation(summary = "Primary 시간표 등록")
     @JwtTokenErrorExample()
     @ApiErrorCodeExamples(value = {
             @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
-            @ApiErrorCodeExample(value = HttpErrorCode.SameTableOrderError),
+            @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
     })
-    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyTimeTableOrderUpdateResponseDto.class)))
-    @PatchMapping("/order")
-    public ResponseEntity<MyTimeTableOrderUpdateResponseDto> updateMyTimeTableOrder(@AuthenticationPrincipal User user,
-                                                                                    @Valid @RequestBody MyTimeTableOrderUpdateRequestDto requestDto) {
-        MyTimeTableOrderUpdateResponseDto responseDto = myTimeTableService.updateMyTimeTableOrder(user, requestDto);
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyPrimaryTimeTableUpdateResponseDto.class)))
+    @PutMapping("/primary/{timetableId}")
+    public ResponseEntity<MyPrimaryTimeTableUpdateResponseDto> updateMyPrimaryTimeTable(@AuthenticationPrincipal User user,
+                                                                                        @Parameter(example = "1", required = true, description = "시간표 아이디") @PathVariable Long timetableId) {
+        MyPrimaryTimeTableUpdateResponseDto responseDto = myTimeTableService.updateMyPrimaryTimeTable(user, timetableId);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Primary 시간표 삭제")
+    @JwtTokenErrorExample()
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
+            @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
+    })
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyPrimaryTimeTableUpdateResponseDto.class)))
+    @DeleteMapping("/primary")
+    public ResponseEntity<MyPrimaryTimeTableUpdateResponseDto> deleteMyPrimaryTimeTable(@AuthenticationPrincipal User user) {
+        MyPrimaryTimeTableUpdateResponseDto responseDto = myTimeTableService.deleteMyPrimaryTimeTable(user);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 

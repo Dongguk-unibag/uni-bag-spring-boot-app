@@ -106,14 +106,11 @@ public enum HttpErrorCode {
     NoSuchTimeTableScheduleError(
             HttpStatus.NOT_FOUND, "시간표 내에 강의 스케줄이 존재하지 않습니다."
     ),
-    SameTableOrderError(
-            HttpStatus.CONFLICT, "현재 시간표의 순위가 변경하고자 하는 순위와 동일합니다."
+    AlreadyPrimaryTimeTableError(
+            HttpStatus.CONFLICT, "현재 시간표는 이미 primary 시간표입니다."
     ),
     NoPrimaryTimeTableError(
             HttpStatus.NOT_FOUND, "사용자가 설정한 primary 시간표가 없습니다."
-    ),
-    NoSecondaryTimeTableError(
-            HttpStatus.NOT_FOUND, "사용자가 설정한 secondary 시간표가 없습니다."
     ),
 
 
@@ -123,6 +120,12 @@ public enum HttpErrorCode {
     ),
     NoSuchFollowError(
             HttpStatus.NOT_FOUND, "존재하지 않은 팔로우 관계입니다."
+    ),
+    AlreadySecondaryFriendError(
+            HttpStatus.CONFLICT, "이미 secondary 친구입니다."
+    ),
+    NoSecondaryFriendError(
+            HttpStatus.NOT_FOUND, "secondary 친구가 없습니다."
     ),
 
     // Assignment

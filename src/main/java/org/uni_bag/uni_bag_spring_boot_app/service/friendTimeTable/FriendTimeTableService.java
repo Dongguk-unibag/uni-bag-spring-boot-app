@@ -55,7 +55,18 @@ public class FriendTimeTableService {
             throw new HttpErrorException(HttpErrorCode.AccessDeniedError);
         }
 
-        TimeTable foundTimeTable = timeTableRepository.findByUserAndTableOrder(followee, 1).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndIsPrimary(followee, true).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
+
+        Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
+
+        return FriendTimeTableReadResponseDto.of(foundTimeTable.getUser(), foundTimeTable, lecturesTimeMap);
+    }
+
+    public FriendTimeTableReadResponseDto getSecondaryFriendTimeTable(User user) {
+        Follow secondaryFriend = followRepository.findByFollowerAndIsSecondaryFriend(user, true)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSecondaryFriendError));
+
+        TimeTable foundTimeTable = timeTableRepository.findByUserAndIsPrimary(secondaryFriend.getFollowee(), true).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
 
         Map<DgLecture, LectureTimeColor> lecturesTimeMap = timetableService.getTimetableWithLectures(foundTimeTable);
 
