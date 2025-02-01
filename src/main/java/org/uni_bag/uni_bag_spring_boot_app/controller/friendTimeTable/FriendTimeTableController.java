@@ -76,7 +76,7 @@ public class FriendTimeTableController {
     @JwtTokenErrorExample
     @ApiErrorCodeExamples(value = {
             @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
-            @ApiErrorCodeExample(value = HttpErrorCode.AccessDeniedError, description = "서로 친구 관계가 아닐 경우 발생"),
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSecondaryFriendError),
     })
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = FriendTimeTableReadResponseDto.class)))
     @GetMapping("/secondary")
