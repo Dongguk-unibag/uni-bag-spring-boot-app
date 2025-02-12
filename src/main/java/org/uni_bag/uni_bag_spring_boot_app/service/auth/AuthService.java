@@ -25,13 +25,14 @@ import java.util.Optional;
 public class AuthService {
     private final KakaoOAuthService kakaoOAuthService;
     private final NaverOAuthService naverOAuthService;
+    private final AppleOAuthService appleOAuthService;
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
 
     public LoginDto login(LoginRequestDto requestDto) {
-        OAuthUserInfoDto userInfo = getUserInfo(requestDto.getSnsType(), requestDto.getAccessToken());
+        OAuthUserInfoDto userInfo = getUserInfo(requestDto.getSnsType(), requestDto.getAccessToken() ,requestDto.getFullName());
         Optional<User> user = userRepository.findBySnsId(userInfo.getSnsId());
         if (user.isEmpty()) {
             signup(userInfo);
@@ -46,10 +47,11 @@ public class AuthService {
     }
 
 
-    private OAuthUserInfoDto getUserInfo(SnsType snsType, String accessToken) {
+    private OAuthUserInfoDto getUserInfo(SnsType snsType, String accessToken, String name) {
         return switch (snsType) {
             case Kakao -> OAuthUserInfoDto.from(kakaoOAuthService.getUserInfo(accessToken));
             case Naver -> OAuthUserInfoDto.from(naverOAuthService.getUserInfo(accessToken));
+            case Apple -> OAuthUserInfoDto.from(appleOAuthService.getUserInfo(accessToken), name);
         };
     }
 

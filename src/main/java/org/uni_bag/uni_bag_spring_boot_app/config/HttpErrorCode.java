@@ -55,6 +55,10 @@ public enum HttpErrorCode {
             HttpStatus.FORBIDDEN, "허가되지 않은 네이버 접근입니다."
     ),
 
+    UnauthorizedAppleError(
+            HttpStatus.UNAUTHORIZED, "애플을 통한 인증에 실패하였습니다."
+    ),
+
     // ----- Token ------
     NotValidTokenError(
             HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."

@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum SnsBaseUrl {
     KakaoBaseUrl("https://kapi.kakao.com"),
     NaverBaseUrl("https://openapi.naver.com"),
+    AppleBaseUrl("https://appleid.apple.com"),
     TestBaseUrl("http://localhost");
 
     private final String url;
