@@ -56,7 +56,7 @@ public enum HttpErrorCode {
     ),
 
     UnauthorizedAppleError(
-            HttpStatus.UNAUTHORIZED, "애플을 통한 인증에 실패하였습니다."
+            HttpStatus.BAD_REQUEST, "애플을 통한 인증에 실패하였습니다."
     ),
 
     // ----- Token ------

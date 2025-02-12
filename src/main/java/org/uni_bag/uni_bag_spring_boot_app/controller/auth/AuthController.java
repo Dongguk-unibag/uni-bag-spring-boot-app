@@ -34,6 +34,7 @@ public class AuthController {
             @ApiErrorCodeExample(value = HttpErrorCode.ForbiddenNaverError),
             @ApiErrorCodeExample(value = HttpErrorCode.UnauthorizedKakaoError),
             @ApiErrorCodeExample(value = HttpErrorCode.UnauthorizedNaverError),
+            @ApiErrorCodeExample(value = HttpErrorCode.UnauthorizedAppleError),
     })
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = LoginResponseDto.class)))
     @PostMapping("/login")
