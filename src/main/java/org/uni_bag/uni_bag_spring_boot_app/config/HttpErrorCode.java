@@ -55,8 +55,12 @@ public enum HttpErrorCode {
             HttpStatus.FORBIDDEN, "허가되지 않은 네이버 접근입니다."
     ),
 
-    UnauthorizedAppleError(
-            HttpStatus.BAD_REQUEST, "애플을 통한 인증에 실패하였습니다."
+    BadRequestAppleError(
+            HttpStatus.BAD_REQUEST, "애플 로그인 인증에 필요한 정보가 잘못되었습니다. 정확한 정보를 확인해주세요."
+    ),
+
+    BadRequestKakaoError(
+            HttpStatus.BAD_REQUEST, "카카오 로그인 인증에 필요한 정보가 잘못되었습니다. 정확한 정보를 확인해주세요."
     ),
 
     // ----- Token ------

@@ -70,6 +70,24 @@ public class AuthService {
         redisService.delete(resolvedRefreshToken);
     }
 
+    public void deleteUser(String accessToken, String refreshToken, User user) {
+        String resolvedRefreshToken = jwtTokenProvider.resolveToken(refreshToken);
+
+        Optional<String> savedAccessToken = redisService.get(resolvedRefreshToken);
+        if (savedAccessToken.isEmpty()) {
+            throw new HttpErrorException(HttpErrorCode.NoSuchRefreshTokenError);
+        }
+        switch (user.getSnsType()) {
+            case Kakao -> kakaoOAuthService.deleteUser(accessToken);
+            case Apple -> appleOAuthService.deleteUser(accessToken);
+        }
+
+        redisService.delete(resolvedRefreshToken);
+
+        userRepository.delete(user);
+
+    }
+
     public TokenReIssueDto reIssueToken(String accessToken, String refreshToken) {
         String resolvedAccessToken = jwtTokenProvider.resolveToken(accessToken);
         String resolvedRefreshToken = jwtTokenProvider.resolveToken(refreshToken);
