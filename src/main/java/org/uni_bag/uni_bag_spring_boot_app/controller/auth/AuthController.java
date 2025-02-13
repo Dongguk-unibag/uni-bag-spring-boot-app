@@ -99,7 +99,7 @@ public class AuthController {
             String oAuthAccessToken,
             @Schema(example = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3...") @RequestHeader("Authorization-refresh")
             String refreshToken,
-            @Schema(example = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3...") @RequestHeader("Authorization") //불정확
+            @Schema(example = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3...")  //불정확
             @AuthenticationPrincipal User user
     ) {
         authService.deleteUser(oAuthAccessToken,refreshToken,user);
