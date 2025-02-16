@@ -9,8 +9,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
+import org.uni_bag.uni_bag_spring_boot_app.domain.User;
+import org.uni_bag.uni_bag_spring_boot_app.dto.auth.delete.DeleteResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.auth.login.LoginDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.auth.login.LoginRequestDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.auth.login.LoginResponseDto;
@@ -34,6 +37,7 @@ public class AuthController {
             @ApiErrorCodeExample(value = HttpErrorCode.ForbiddenNaverError),
             @ApiErrorCodeExample(value = HttpErrorCode.UnauthorizedKakaoError),
             @ApiErrorCodeExample(value = HttpErrorCode.UnauthorizedNaverError),
+            @ApiErrorCodeExample(value = HttpErrorCode.BadRequestAppleError),
     })
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = LoginResponseDto.class)))
     @PostMapping("/login")
@@ -80,5 +84,25 @@ public class AuthController {
     ){
         TokenReIssueDto dto = authService.reIssueToken(accessToken, refreshToken);
         return new ResponseEntity<>(TokenReIssueResponseDto.fromDto(dto), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "회원탈퇴")
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NotValidAccessTokenError),
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchRefreshTokenError),
+            @ApiErrorCodeExample(value = HttpErrorCode.BadRequestAppleError)
+    })
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = DeleteResponseDto.class)))
+    @PostMapping("/delete")
+    public ResponseEntity<DeleteResponseDto> delete(
+            @Schema(example = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIy...", description = "토큰 발행 기관에서 받은 AccessToken , apple 로그인 시 Bearer 생략 authorization_code 만 전송") @RequestHeader("OAuthAccessToken")
+            String oAuthAccessToken,
+            @Schema(example = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3...") @RequestHeader("Authorization-refresh")
+            String refreshToken,
+            @Schema(example = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3...")  //불정확
+            @AuthenticationPrincipal User user
+    ) {
+        authService.deleteUser(oAuthAccessToken,refreshToken,user);
+        return new ResponseEntity<>(DeleteResponseDto.success(), HttpStatus.CREATED);
     }
 }

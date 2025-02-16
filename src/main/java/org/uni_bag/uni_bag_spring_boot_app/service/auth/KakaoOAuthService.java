@@ -19,6 +19,17 @@ public class KakaoOAuthService {
         this.webClient = webClient;
     }
 
+    public void deleteUser(String accessToken){
+        webClient.post()
+                .uri("/v1/user/unlink")
+                .header("Authorization", accessToken)
+                .retrieve()
+                .onStatus(status -> status.value() == 400,
+                        this::handle400Error)
+                .bodyToMono(void.class)
+                .block();
+    }
+
     public KakaoUserInfoResponse getUserInfo(String accessToken) {
         return webClient.get()
                 .uri("/v2/user/me")
@@ -30,6 +41,10 @@ public class KakaoOAuthService {
                         this::handle403Error)
                 .bodyToMono(KakaoUserInfoResponse.class)
                 .block();
+    }
+
+    private Mono<Throwable> handle400Error(ClientResponse response) {
+        return Mono.error(new HttpErrorException(HttpErrorCode.BadRequestKakaoError));
     }
 
     private Mono<Throwable> handle401Error(ClientResponse response) {

@@ -36,11 +36,11 @@ public class OAuthUserInfoDto {
                 .build();
     }
 
-    public static OAuthUserInfoDto from(AppleJwt appleResponse,String name) {
+    public static OAuthUserInfoDto from(AppleJwt appleResponse) {
         return OAuthUserInfoDto.builder()
                 .snsId(appleResponse.getSub())
                 .snsType(SnsType.Apple)
-                .name(name)
+                .name(null)
                 .email(appleResponse.getEmail())
                 .build();
     }

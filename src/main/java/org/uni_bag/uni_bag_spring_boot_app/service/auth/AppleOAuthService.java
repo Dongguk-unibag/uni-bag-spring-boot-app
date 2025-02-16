@@ -54,8 +54,7 @@ public class AppleOAuthService {
         return decodeJwt(appleValidateCode(authorizationCode).getId_token());
     }
 
-    //회원 탈퇴 추후 업데이트
-    public void revokeToken(String authorizationCode) {
+    public void deleteUser(String authorizationCode) {
 
         webClient.post()
                 .uri(uriBuilder -> {
@@ -153,7 +152,7 @@ public class AppleOAuthService {
     }
 
     private Mono<Throwable> handle400Error(ClientResponse response) {
-        return Mono.error(new HttpErrorException(HttpErrorCode.UnauthorizedAppleError));
+        return Mono.error(new HttpErrorException(HttpErrorCode.BadRequestAppleError));
     }
 
 }

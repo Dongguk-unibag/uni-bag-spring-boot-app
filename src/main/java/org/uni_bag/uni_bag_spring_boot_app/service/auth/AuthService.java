@@ -32,7 +32,7 @@ public class AuthService {
     private final RedisService redisService;
 
     public LoginDto login(LoginRequestDto requestDto) {
-        OAuthUserInfoDto userInfo = getUserInfo(requestDto.getSnsType(), requestDto.getAccessToken() ,requestDto.getFullName());
+        OAuthUserInfoDto userInfo = getUserInfo(requestDto.getSnsType(), requestDto.getAccessToken());
         Optional<User> user = userRepository.findBySnsId(userInfo.getSnsId());
         if (user.isEmpty()) {
             signup(userInfo);
@@ -47,11 +47,11 @@ public class AuthService {
     }
 
 
-    private OAuthUserInfoDto getUserInfo(SnsType snsType, String accessToken, String name) {
+    private OAuthUserInfoDto getUserInfo(SnsType snsType, String accessToken) {
         return switch (snsType) {
             case Kakao -> OAuthUserInfoDto.from(kakaoOAuthService.getUserInfo(accessToken));
             case Naver -> OAuthUserInfoDto.from(naverOAuthService.getUserInfo(accessToken));
-            case Apple -> OAuthUserInfoDto.from(appleOAuthService.getUserInfo(accessToken), name);
+            case Apple -> OAuthUserInfoDto.from(appleOAuthService.getUserInfo(accessToken));
         };
     }
 
@@ -68,6 +68,24 @@ public class AuthService {
         }
 
         redisService.delete(resolvedRefreshToken);
+    }
+
+    public void deleteUser(String accessToken, String refreshToken, User user) {
+        String resolvedRefreshToken = jwtTokenProvider.resolveToken(refreshToken);
+
+        Optional<String> savedAccessToken = redisService.get(resolvedRefreshToken);
+        if (savedAccessToken.isEmpty()) {
+            throw new HttpErrorException(HttpErrorCode.NoSuchRefreshTokenError);
+        }
+        switch (user.getSnsType()) {
+            case Kakao -> kakaoOAuthService.deleteUser(accessToken);
+            case Apple -> appleOAuthService.deleteUser(accessToken);
+        }
+
+        redisService.delete(resolvedRefreshToken);
+
+        userRepository.delete(user);
+
     }
 
     public TokenReIssueDto reIssueToken(String accessToken, String refreshToken) {

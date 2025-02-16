@@ -21,6 +21,4 @@ public class LoginRequestDto {
     @NotNull(message = "accessToken이 필요합니다.")
     private String accessToken;
 
-    @Schema(example = "홍길동", description = "첫 애플 로그인 시 response 값 full name")
-    private String fullName;
 }
