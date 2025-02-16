@@ -20,4 +20,11 @@ public class WebClientConfig {
                 .baseUrl(SnsBaseUrl.NaverBaseUrl.getUrl())
                 .build();
     }
+
+    @Bean
+    public WebClient appleWebClient(){
+        return WebClient.builder()
+                .baseUrl(SnsBaseUrl.AppleBaseUrl.getUrl())
+                .build();
+    }
 }

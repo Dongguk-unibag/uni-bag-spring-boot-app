@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.uni_bag.uni_bag_spring_boot_app.constant.SnsType;
+import org.uni_bag.uni_bag_spring_boot_app.dto.auth.oauth.apple.AppleJwt;
 import org.uni_bag.uni_bag_spring_boot_app.dto.auth.oauth.kakao.KakaoUserInfoResponse;
 import org.uni_bag.uni_bag_spring_boot_app.dto.auth.oauth.naver.NaverUserInfoResponse;
 
@@ -32,6 +33,15 @@ public class OAuthUserInfoDto {
                 .snsType(SnsType.Naver)
                 .name(naverResponse.getResponseDetails().getName())
                 .email(naverResponse.getResponseDetails().getEmail())
+                .build();
+    }
+
+    public static OAuthUserInfoDto from(AppleJwt appleResponse,String name) {
+        return OAuthUserInfoDto.builder()
+                .snsId(appleResponse.getSub())
+                .snsType(SnsType.Apple)
+                .name(name)
+                .email(appleResponse.getEmail())
                 .build();
     }
 

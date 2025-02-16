@@ -40,3 +40,6 @@ out/
 **/src/main/resources/application**.yaml
 
 **/src/main/java/org/uni_bag/uni_bag_spring_boot_app/temp
+
+### Key
+*.p8
