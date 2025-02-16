@@ -38,6 +38,15 @@ public class UserService {
         return UserTosAgreementResponseDto.createResponse();
     }
 
+    public UserTosRescissionResponseDto rescindTos(User user) {
+        User foundUser = userRepository.findById(user.getId()).orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
+
+        foundUser.rescindTos();
+        foundUser.deleteEmsInformation();
+        return UserTosRescissionResponseDto.createResponse();
+    }
+
+
     public UserEmsLoginCompleteResponseDto completeEmsLogin(User user, @Valid UserEmsLoginCompleteRequestDto requestDto) {
         User foundUser = userRepository.findById(user.getId()).orElseThrow(() -> new HttpErrorException(HttpErrorCode.UserNotFoundError));
 

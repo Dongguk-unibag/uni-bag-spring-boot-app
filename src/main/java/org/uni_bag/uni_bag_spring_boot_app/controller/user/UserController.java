@@ -67,6 +67,15 @@ public class UserController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "TOS 철회 및 EMS 정보 삭제")
+    @JwtTokenErrorExample
+    @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTosRescissionResponseDto.class)))
+    @PostMapping("/tos/rescission")
+    public ResponseEntity<UserTosRescissionResponseDto> rescindTos(@AuthenticationPrincipal User user) {
+        UserTosRescissionResponseDto responseDto = userService.rescindTos(user);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
     @Operation(summary = "EMS 로그인 완료")
     @JwtTokenErrorExample
     @ApiErrorCodeExamples(value = {
