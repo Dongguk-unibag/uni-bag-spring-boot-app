@@ -3,6 +3,8 @@ package org.uni_bag.uni_bag_spring_boot_app.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.uni_bag.uni_bag_spring_boot_app.dto.assignment.AssignmentCreateRequestDto;
 import org.uni_bag.uni_bag_spring_boot_app.dto.assignment.AssignmentUpdateRequestDto;
 
@@ -19,6 +21,8 @@ public class Assignment {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     private String title;

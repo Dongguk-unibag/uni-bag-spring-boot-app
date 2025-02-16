@@ -20,6 +20,7 @@ import java.util.Map;
 @Getter
 public class User implements OAuth2User {
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
