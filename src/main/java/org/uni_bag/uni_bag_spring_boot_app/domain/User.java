@@ -69,10 +69,20 @@ public class User implements OAuth2User {
         this.isTosAccepted = true;
     }
 
+    public void rescindTos(){
+        this.isTosAccepted = false;
+    }
+
     public void completeEmsLogin(UserEmsLoginCompleteRequestDto requestDto){
         this.isEmsLoggedIn = true;
         this.name = requestDto.getName();
         this.studentId = requestDto.getStudentId();
+    }
+
+    public void deleteEmsInformation(){
+        this.isEmsLoggedIn = false;
+        this.name = null;
+        this.studentId = null;
     }
 
     public static User from(OAuthUserInfoDto dto){
