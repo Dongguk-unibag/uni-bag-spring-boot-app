@@ -8,6 +8,7 @@ import org.uni_bag.uni_bag_spring_boot_app.domain.DgLecture;
 import org.uni_bag.uni_bag_spring_boot_app.domain.DgLectureTime;
 import org.uni_bag.uni_bag_spring_boot_app.domain.TimeTable;
 import org.uni_bag.uni_bag_spring_boot_app.dto.LectureDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.TimeTableInfoDto;
 import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.LectureTimeColor;
 
 import java.sql.Time;
@@ -18,14 +19,12 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 public class MyTimeTableReadResponseDto {
-    @Schema(example = "1", description = "시간표 아이디")
-    private Long tableId;
-
+    private TimeTableInfoDto timeTableInfo;
     List<LectureDto> lectures;
 
     public static MyTimeTableReadResponseDto of(TimeTable timeTable, Map<DgLecture, LectureTimeColor> lecturesTimeMap) {
         return MyTimeTableReadResponseDto.builder()
-                .tableId(timeTable.getId())
+                .timeTableInfo(TimeTableInfoDto.from(timeTable))
                 .lectures(lecturesTimeMap.entrySet().stream()
                         .map(dgLectureListEntry -> LectureDto.of(dgLectureListEntry.getKey(), dgLectureListEntry.getValue()))
                         .toList()
