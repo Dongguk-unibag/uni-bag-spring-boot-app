@@ -11,6 +11,9 @@ import org.uni_bag.uni_bag_spring_boot_app.domain.TimeTable;
 @AllArgsConstructor
 @Builder
 public class MyTimeTableCreateResponseDto {
+    @Schema(example = "1", description = "시간표 아이디")
+    private Long timetableId;
+
     @Schema(example = "2024", description = "시간표 년도")
     private int year;
 
@@ -22,6 +25,7 @@ public class MyTimeTableCreateResponseDto {
 
     public static MyTimeTableCreateResponseDto fromEntity(TimeTable timeTable){
         return MyTimeTableCreateResponseDto.builder()
+                .timetableId(timeTable.getId())
                 .year(timeTable.getYear())
                 .semester(timeTable.getSemester())
                 .message("성공적으로 시간표를 생성하였습니다")
