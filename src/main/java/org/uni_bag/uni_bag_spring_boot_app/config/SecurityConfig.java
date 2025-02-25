@@ -38,7 +38,7 @@ public class SecurityConfig {
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/h2-console/**", "/images/**", "/swagger-ui/**", "/v3/api-docs/**" , "/actuator/*").permitAll() // 모든 사용자에게 접근 허용
+                                .requestMatchers("/h2-console/**", "/images/**", "/swagger-ui/**", "/v3/api-docs/**" , "/actuator/**").permitAll() // 모든 사용자에게 접근 허용
                                 .anyRequest().authenticated() // 이외의 Url에 대해서는 403 에러 발생
                 )
                 .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 "/images/**",
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
-                "/actuator/*");
+                "/actuator/**");
 
     }
 }
