@@ -44,6 +44,11 @@ jobs:
     - name: Build with gradle
       run: ./gradlew build -x test
 
+    - name: Find JAR file dynamically
+      id: find_jar
+      run: echo "JAR_FILE=$(ls build/libs/uni_bag_spring_boot_app-*.jar | head -n 1)" >> $GITHUB_ENV
+
+
     - name: copy file via ssh password
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -51,7 +56,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        source: "build/libs/uni_bag_spring_boot_app-0.0.1-SNAPSHOT.jar" # Needs modification to trace version
+        source: ${{ env.JAR_FILE }}
         target: ${{ secrets.TARGET_PATH }}
         strip_components: 2
 
