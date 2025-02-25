@@ -22,10 +22,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Print Working Directory
-      run: |
-        pwd
-
     - name: Add profiles
       run: |
           mkdir -p src/main/resources
@@ -38,9 +34,6 @@ jobs:
           cd ../../../
 
     # Needs update to prod config echo "${{ secrets.APPLICATION_PROD_YAML}}" > application-prod.yaml
-    - name: Print Working Directory
-      run: |
-        pwd
         
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
@@ -59,4 +52,20 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         source: "build/libs/uni_bag_spring_boot_app-0.0.1-SNAPSHOT.jar" # Needs modification to trace version
-        target: "~"  #${{ secrets.TARGET_PATH }}
+        target: ${{ secrets.TARGET_PATH }}
+        strip_components: 2
+
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.2.1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /home/odroid/Desktop/uni-bag
+          docker stop $(docker ps --filter "name=uni-bag-spring-boot-app" -q)
+          docker rm $(docker ps -a --filter "name=uni-bag-spring-boot-app" -q)
+          docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'uni-bag-spring-boot-app')
+          docker compose up -d
+          rm uni_bag_spring_boot_app*.jar
