@@ -24,8 +24,9 @@ public class ApiExceptionHandler {
     @ExceptionHandler(HttpErrorException.class)
     @JsonView(CustomJsonView.Summary.class)
     protected ResponseEntity<ErrorResponseDto> handleCustomErrorException(HttpErrorException e) {
-        log.error(e.getMessage());
         ErrorResponseDto errorResponseDto = ErrorResponseDto.from(e.getHttpErrorCode());
+        logException(e);
+
         return new ResponseEntity<>(errorResponseDto, e.getHttpErrorCode().getHttpStatus());
     }
 
@@ -39,6 +40,8 @@ public class ApiExceptionHandler {
 
         ErrorResponseDto notValidRequestErrorResponseDto
                 = ErrorResponseDto.of(ErrorDescriptions);
+
+        logException(e);
 
         return new ResponseEntity<>(notValidRequestErrorResponseDto, HttpStatus.BAD_REQUEST);
     }
@@ -54,6 +57,8 @@ public class ApiExceptionHandler {
         ErrorResponseDto notValidRequestErrorResponseDto
                 = ErrorResponseDto.of(ErrorDescriptions);
 
+        logException(e);
+
         return new ResponseEntity<>(notValidRequestErrorResponseDto, HttpStatus.BAD_REQUEST);
     }
 
@@ -63,6 +68,8 @@ public class ApiExceptionHandler {
     protected ResponseEntity<ErrorResponseDto> handleAccessDeniedException(AccessDeniedException e) {
         ErrorResponseDto errorResponseDto =
                 ErrorResponseDto.from(HttpErrorCode.AccessDeniedError);
+
+        logException(e);
 
         return new ResponseEntity<>(errorResponseDto, HttpErrorCode.AccessDeniedError.getHttpStatus());
     }
@@ -78,6 +85,8 @@ public class ApiExceptionHandler {
         ErrorResponseDto notValidRequestErrorResponseDto =
                 ErrorResponseDto.of(e, errorDescriptions);
 
+        logException(e);
+
         return new ResponseEntity<>(notValidRequestErrorResponseDto, HttpStatus.BAD_REQUEST);
     }
 
@@ -85,18 +94,41 @@ public class ApiExceptionHandler {
     @JsonView(CustomJsonView.Summary.class)
     public ResponseEntity<ErrorResponseDto> handleMissingHeader(MissingRequestHeaderException e) {
         HttpErrorCode missingRequestHeaderError = HttpErrorCode.MissingRequestHeaderError;
+
+        logException(e);
+
         return new ResponseEntity<>(ErrorResponseDto.from(missingRequestHeaderError), missingRequestHeaderError.getHttpStatus());
     }
 
     @ExceptionHandler(InternalAuthenticationServiceException.class)
     @JsonView(CustomJsonView.Summary.class)
     protected ResponseEntity<ErrorResponseDto> HandleInternalAuthenticationServiceException(Exception e) {
+        logException(e);
+
         return new ResponseEntity<>(ErrorResponseDto.from(HttpErrorCode.InternalServerError), HttpErrorCode.InternalServerError.getHttpStatus());
     }
 
     @ExceptionHandler(Exception.class)
     @JsonView(CustomJsonView.Summary.class)
     protected ResponseEntity<ErrorResponseDto> HandleGeneralException(Exception e) {
+        logException(e);
+
         return new ResponseEntity<>(ErrorResponseDto.from(HttpErrorCode.InternalServerError), HttpErrorCode.InternalServerError.getHttpStatus());
+    }
+
+
+    private void logException(Exception e) {
+        log.error("[EXCEPTION INFO] Exception Class: {} | Exception Message: {}",
+                e.getClass().getName(),
+                e.getMessage()
+        );
+    }
+
+    private void logException(HttpErrorException e) {
+        log.error("[EXCEPTION INFO] Exception Class: {} | Exception Message: {} | Exception Code: {}",
+                "HttpErrorException",
+                e.getMessage(),
+                e.getHttpErrorCode().name()
+        );
     }
 }
