@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.uni_bag.uni_bag_spring_boot_app.filter.JwtAuthenticationFilter;
@@ -47,8 +48,10 @@ public class SecurityConfig {
                                         "/h2-console/**",
                                         "/images/**",
                                         "/swagger-ui/**",
-                                        "/v3/api-docs/**")
+                                        "/v3/api-docs/**",
+                                        "/actuator/**")
                                 .permitAll() // 모든 사용자에게 접근 허용
+                                .requestMatchers("/actuator/prometheus").access(new WebExpressionAuthorizationManager("hasIpAddress('127.0.0.1')")) // Prometheus의 경우 내부망에서만 접근 허용
                                 .anyRequest().authenticated()// 이외의 Url에 대해서는 403 에러 발생
                 )
                 .exceptionHandling(exceptionHandling ->
