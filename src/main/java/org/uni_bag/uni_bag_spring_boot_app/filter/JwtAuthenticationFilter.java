@@ -1,6 +1,7 @@
 package org.uni_bag.uni_bag_spring_boot_app.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.oauth2.sdk.auth.JWTAuthentication;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.constant.TokenType;
+import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.exception.ErrorResponseDto;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.provider.JwtTokenProvider;
@@ -34,8 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         try {
             String accessToken = request.getHeader("Authorization");
-            if(accessToken == null){
-                throw new HttpErrorException(HttpErrorCode.AccessDeniedError);
+            if(accessToken == null || !accessToken.startsWith("Bearer ")) {
+                SecurityContextHolder.getContext().setAuthentication(null);
+                chain.doFilter(request, response);
+                return;
             }
 
             String resolvedAccessToken = jwtTokenProvider.resolveAccessToken(accessToken);
@@ -43,6 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             Authentication authentication = jwtTokenProvider.getAuthentication(resolvedAccessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("SnsId: {}", ((User)authentication.getPrincipal()).getSnsId());
             chain.doFilter(request, response);
         } catch (Exception e) {
             jwtExceptionHandler(response, e);
@@ -63,8 +68,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String json = new ObjectMapper().writeValueAsString(ErrorResponseDto.from(httpErrorCode));
             response.getWriter().write(json);
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
+        } catch (IOException ex) {
+            log.error("IO Exception: {}", ex.getMessage());
         }
     }
 }

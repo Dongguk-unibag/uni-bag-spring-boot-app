@@ -43,3 +43,6 @@ out/
 
 ### Key
 *.p8
+
+### log
+log/
