@@ -1,0 +1,82 @@
+name: Spring Boot CI/CD
+
+env:
+  PROJECT_NAME: "dongguk-unibag"
+  
+on:
+  push:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    name: Spring Boot CI/CD
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Add profiles
+      run: |
+          mkdir -p src/main/resources
+          cd src/main/resources  
+          echo "${{ secrets.APPLICATION_YAML}}" > application.yaml
+          echo "${{ secrets.APPLICATION_COMMON_YAML}}" > application-common.yaml
+          echo "${{ secrets.APPLICATION_DEV_YAML}}" > application-dev.yaml
+          echo "${{ secrets.APPLE_AUTH_KEY}}" > ${{  secrets.AUTH_KEY_NAME}}.p8
+          ls -al
+          cd ../../../
+
+    # Needs update to prod config echo "${{ secrets.APPLICATION_PROD_YAML}}" > application-prod.yaml
+        
+    - name: Gradle Caching
+      uses: actions/cache@v3.4.2
+      with:
+        path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+            ${{ runner.os }}-gradle-
+
+
+    - name: Grant Execute Permission For Gradlew
+      run: chmod +x gradlew
+
+    - name: Build with gradle
+      run: ./gradlew build -x test
+
+    - name: Find JAR file dynamically
+      id: find_jar
+      run: echo "JAR_FILE=$(ls build/libs/uni_bag_spring_boot_app-*.jar | grep -v 'plain' | head -n 1)" >> $GITHUB_ENV
+
+    - name: copy file via ssh password
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        source: ${{ env.JAR_FILE }}
+        target: ${{ secrets.TARGET_PATH }}
+        strip_components: 2
+
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.2.1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /home/odroid/Desktop/uni-bag
+          docker stop $(docker ps --filter "name=uni-bag-spring-boot-app" -q)
+          docker rm $(docker ps -a --filter "name=uni-bag-spring-boot-app" -q)
+          docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'uni-bag-spring-boot-app')
+          docker compose up -d
+          rm uni_bag_spring_boot_app*.jar
+          
