@@ -46,3 +46,6 @@ out/
 
 ### log
 log/
+
+### firebase
+**/src/main/resources/firebase/
