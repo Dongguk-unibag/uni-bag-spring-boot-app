@@ -29,10 +29,15 @@ jobs:
           echo "${{ secrets.APPLICATION_DEV_YAML}}" > application-dev.yaml
           echo "${{ secrets.APPLE_AUTH_KEY}}" > ${{  secrets.AUTH_KEY_NAME}}.p8
           mkdir firebase
-          cd firebase
-          echo "${{ secrets.FCM_ACCOUNT_JSON}}" > service-account.json
           ls -al
-          cd ../../../../
+          cd ../../../
+
+    - name: create-json
+      uses: jsdaniell/create-json@1.2.3
+      with:
+        name: "service-account.json"
+        json: ${{ secrets.FCM_ACCOUNT_JSON }}
+        dir: 'src/main/resources/firebase/'
 
     # Needs update to prod config echo "${{ secrets.APPLICATION_PROD_YAML}}" > application-prod.yaml
         
