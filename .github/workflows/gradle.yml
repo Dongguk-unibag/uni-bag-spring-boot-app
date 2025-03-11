@@ -28,8 +28,11 @@ jobs:
           echo "${{ secrets.APPLICATION_COMMON_YAML}}" > application-common.yaml
           echo "${{ secrets.APPLICATION_DEV_YAML}}" > application-dev.yaml
           echo "${{ secrets.APPLE_AUTH_KEY}}" > ${{  secrets.AUTH_KEY_NAME}}.p8
+          mkdir firebase
+          cd firebase
+          echo "${{ secrets.FCM_ACCOUNT_JSON}}" > service-account.json
           ls -al
-          cd ../../../
+          cd ../../../../
 
     # Needs update to prod config echo "${{ secrets.APPLICATION_PROD_YAML}}" > application-prod.yaml
         
@@ -79,4 +82,3 @@ jobs:
           docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'uni-bag-spring-boot-app')
           docker compose up -d
           rm uni_bag_spring_boot_app*.jar
-          
