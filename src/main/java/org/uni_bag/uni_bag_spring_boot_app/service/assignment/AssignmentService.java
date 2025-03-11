@@ -21,6 +21,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 public class AssignmentService {
+    private final AssignmentNotificationService notificationService;
+
     private final AssignmentRepository assignmentRepository;
     private final DgLectureRepository dgLectureRepository;
 
@@ -47,6 +49,7 @@ public class AssignmentService {
         checkAssignmentTimeValid(requestDto.getStartDateTime(), requestDto.getEndDateTime());
 
         Assignment newAssignment = assignmentRepository.save(Assignment.of(user, lecture, requestDto));
+        notificationService.scheduleNotification(newAssignment);
 
         return AssignmentCreateResponseDto.fromEntity(newAssignment);
     }
@@ -70,6 +73,7 @@ public class AssignmentService {
         checkAssignmentTimeValid(requestDto.getStartDateTime(), requestDto.getEndDateTime());
 
         foundAssignment.updateAssignment(requestDto, lecture);
+        notificationService.rescheduleNotification(foundAssignment);
 
         return AssignmentUpdateResponseDto.fromEntity(foundAssignment);
     }
@@ -79,6 +83,7 @@ public class AssignmentService {
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchAssignmentError));
 
         assignmentRepository.delete(foundAssignment);
+        notificationService.cancelNotification(foundAssignment);
 
         return AssignmentDeleteResponseDto.fromEntity(foundAssignment);
     }
@@ -98,6 +103,7 @@ public class AssignmentService {
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchAssignmentError));
 
         foundAssignment.toggleCompleted();
+        notificationService.cancelNotification(foundAssignment);
 
         return AssignmentCompleteToggleResponseDto.fromEntity(foundAssignment);
     }
