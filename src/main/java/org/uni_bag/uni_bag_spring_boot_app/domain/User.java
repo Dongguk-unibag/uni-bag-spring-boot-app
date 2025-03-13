@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Entity(name = "users")
+@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
