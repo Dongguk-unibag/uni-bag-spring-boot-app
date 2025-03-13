@@ -23,28 +23,36 @@ public class LogFilter extends OncePerRequestFilter {
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
         requestWrapper.getInputStream();
 
-        // 요청 로그 출력
-        log.info("[REQUEST] {} {} | IP: {} | User-Agent: {} | RequestBody:{}",
-                request.getMethod(),
-                request.getRequestURI(),
-                request.getRemoteAddr(),
-                request.getHeader("User-Agent"),
-                getRequestBody(requestWrapper)
-        );
+        boolean isShowingRequestLog = checkRequestLogShow(requestWrapper);
+
+        if(isShowingRequestLog) {
+            // 요청 로그 출력
+            log.info("[REQUEST] {} {} | IP: {} | User-Agent: {} | RequestBody:{}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    request.getRemoteAddr(),
+                    request.getHeader("User-Agent"),
+                    getRequestBody(requestWrapper)
+            );
+        }
 
         // 필터 체인 호출
         filterChain.doFilter(requestWrapper, responseWrapper);
 
         long duration = System.currentTimeMillis() - startTime;
 
-        // 응답 로그 출력
-        log.info("[RESPONSE] {} {} | Status: {} | Time Taken: {}ms | ResponseBody:{}",
-                request.getMethod(),
-                request.getRequestURI(),
-                response.getStatus(),
-                duration,
-                new String(responseWrapper.getContentAsByteArray(), StandardCharsets.UTF_8)
-        );
+        boolean isShowingResponseLog = checkResponseLogShow(requestWrapper);
+
+        if(isShowingResponseLog) {
+            // 응답 로그 출력
+            log.info("[RESPONSE] {} {} | Status: {} | Time Taken: {}ms | ResponseBody:{}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    response.getStatus(),
+                    duration,
+                    new String(responseWrapper.getContentAsByteArray(), StandardCharsets.UTF_8)
+            );
+        }
 
         responseWrapper.copyBodyToResponse(); // 요청을 전달
     }
@@ -62,5 +70,13 @@ public class LogFilter extends OncePerRequestFilter {
         } catch (IOException e) {
             return new String(content, StandardCharsets.UTF_8);
         }
+    }
+
+    private boolean checkRequestLogShow(HttpServletRequest request) {
+        return !request.getRequestURI().startsWith("/actuator");
+    }
+
+    private boolean checkResponseLogShow(HttpServletRequest request) {
+        return !request.getRequestURI().startsWith("/actuator");
     }
 }
