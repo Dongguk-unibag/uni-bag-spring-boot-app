@@ -115,6 +115,8 @@ jobs:
           cd ~/Desktop/uni-bag/${{ env.STOPPED_UPSTREAM }}
           docker compose up -d 
 
+    - name: Wait for 2 minutes
+      run: sleep 120
 
     - name: Change nginx upstream
       uses: appleboy/ssh-action@master
@@ -135,7 +137,7 @@ jobs:
         url: https://${{ secrets.NGINX_IP }}/api/server/env
         # 총 5번 하는데, 15초의 간격을 두고함. 이때까지 응답이 정상이 아니라면 배포 실패
         max-attempts: 5
-        retry-delay: 30s
+        retry-delay: 15s
 
     - name: Rollback Nginx upstream if health check fails
       if: failure() # health_check 단계가 실패하면 실행
