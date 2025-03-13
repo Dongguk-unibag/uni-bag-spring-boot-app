@@ -17,12 +17,12 @@ public class Follow {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "follower_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User follower;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "followee_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User followee;
 
