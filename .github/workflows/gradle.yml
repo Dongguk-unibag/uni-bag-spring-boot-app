@@ -107,13 +107,13 @@ jobs:
           if [[ "$running" == "true" ]]; then
             echo "컨테이너 중지 및 제거 중..."
             cd ~/Desktop/uni-bag/${{env.STOPPED_UPSTREAM}}
-            docker-compose down
+            docker compose down
           else
            echo "실행중인 컨테이너가 없음"
           fi
           echo "🟢 ${{ env.STOPPED_UPSTREAM }} 환경을 실행합니다..."
           cd ~/Desktop/uni-bag/${{ env.STOPPED_UPSTREAM }}
-          docker-compose up -d 
+          docker compose up -d 
 
     - name: Check the deployed service URL
       uses: jtalk/url-health-check-action@v3
@@ -147,7 +147,7 @@ jobs:
           if [[ "$running" == "true" ]]; then
             echo "${{ env.CURRENT_UPSTREAM }} 컨테이너 중지 및 제거 중..."
             cd ~/Desktop/uni-bag/${{env.CURRENT_UPSTREAM}}
-            docker-compose down
+            docker compose down
           else
             echo "실행중인 컨테이너가 없음"
           fi
