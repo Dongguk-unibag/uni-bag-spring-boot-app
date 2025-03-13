@@ -73,17 +73,81 @@ jobs:
         target: ${{ secrets.TARGET_PATH }}
         strip_components: 2
 
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v1.2.1
+  deploy:
+    needs: build # "build" job이 성공해야만 deploy가 진행된다.
+    runs-on: ubuntu-latest
+
+
+
+    steps:
+    - name: Set Green and Blue
+      run: |
+        CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.NGINX_IP }}/api/server/env")
+        echo "현재 실행 중인 환경: $CURRENT_UPSTREAM"
+        echo "CURRENT_UPSTREAM=$CURRENT_UPSTREAM" >> $GITHUB_ENV
+        
+        if [ "$CURRENT_UPSTREAM" = "blue" ]; then
+          echo "STOPPED_UPSTREAM=green" >> $GITHUB_ENV
+        elif [ "$CURRENT_UPSTREAM" = "green" ]; then
+          echo "STOPPED_UPSTREAM=blue" >> $GITHUB_ENV
+        else
+          echo "🚨 오류: 현재 실행 중인 환경을 확인할 수 없습니다."
+          exit 1
+        fi
+
+    - name: Start Stopped Server with Docker Compose
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          cd /home/odroid/Desktop/uni-bag
-          docker stop $(docker ps --filter "name=uni-bag-spring-boot-app" -q)
-          docker rm $(docker ps -a --filter "name=uni-bag-spring-boot-app" -q)
-          docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'uni-bag-spring-boot-app')
-          docker compose up -d
-          rm uni_bag_spring_boot_app*.jar
+          running=$(docker inspect --format='{{.State.Running}}' ${{ env.STOPPED_UPSTREAM }}-uni-bag 2>/dev/null || echo "false")
+          if [[ "$running" == "true" ]]; then
+            echo "컨테이너 중지 및 제거 중..."
+            cd ~/Desktop/uni-bag/${{env.STOPPED_UPSTREAM}}
+            docker-compose down
+          else
+           echo "실행중인 컨테이너가 없음"
+          fi
+          echo "🟢 ${{ env.STOPPED_UPSTREAM }} 환경을 실행합니다..."
+          cd ~/Desktop/uni-bag/${{ env.STOPPED_UPSTREAM }}
+          docker-compose up -d 
+
+    - name: Check the deployed service URL
+      uses: jtalk/url-health-check-action@v3
+      with:
+        url: http://${{ env.STOPPED_IP }}:${{ env.STOPPED_PORT }}/api/server/env
+        # 총 5번 하는데, 15초의 간격을 두고함. 이때까지 응답이 정상이 아니라면 배포 실패
+        max-attempts: 5
+        retry-delay: 15s
+
+    - name: Change nginx upstream
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script_stop: true
+        # 여기서 -i가 아닌 -it로 진행하면 오류가 발생하고, -c가 없으면 도커가 아닌 호스트에서 경로를 찾는다. 주의
+        script: |
+          docker exec -i nginx bash -c 'echo "set \$service_env ${{ env.STOPPED_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && service nginx reload'
+
+    - name: Terminate Current Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          running=$(docker inspect --format='{{.State.Running}}' ${{ env.CURRENT_UPSTREAM }}-uni-bag 2>/dev/null || echo "false")
+          if [[ "$running" == "true" ]]; then
+            echo "${{ env.CURRENT_UPSTREAM }} 컨테이너 중지 및 제거 중..."
+            cd ~/Desktop/uni-bag/${{env.CURRENT_UPSTREAM}}
+            docker-compose down
+          else
+            echo "실행중인 컨테이너가 없음"
+          fi
