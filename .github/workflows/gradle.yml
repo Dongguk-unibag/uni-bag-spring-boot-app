@@ -113,7 +113,7 @@ jobs:
           fi
           echo "🟢 ${{ env.STOPPED_UPSTREAM }} 환경을 실행합니다..."
           cd ~/Desktop/uni-bag/${{ env.STOPPED_UPSTREAM }}
-          docker compose up -d 
+          docker compose up -d --build
 
     - name: Wait for 2 minutes
       run: sleep 120
