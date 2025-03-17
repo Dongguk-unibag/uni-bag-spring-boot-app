@@ -44,4 +44,8 @@ public class DgLectureSpecifications {
     public static Specification<DgLecture> lectureNameEquals(String lectureName) {
         return (root, query, cb) -> cb.equal(root.get("courseName"), lectureName);
     }
+
+    public static Specification<DgLecture> idGreaterThan(Long cursorId) {
+        return (root, query, cb) -> cb.greaterThan(root.get("id"), cursorId);
+    }
 }
