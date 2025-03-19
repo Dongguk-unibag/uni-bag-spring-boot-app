@@ -94,4 +94,16 @@ public class FollowController {
         SecondaryFriendUpdateResponseDto responseDto = followService.deleteSecondaryFriend(user);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
+
+    @Operation(summary = "Secondary 친구 조회")
+    @JwtTokenErrorExample()
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSecondaryFriendError),
+    })
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = SecondaryFriendReadResponseDto.class)))
+    @GetMapping("/secondary")
+    public ResponseEntity<SecondaryFriendReadResponseDto> getSecondaryFriend(@AuthenticationPrincipal User user) {
+        SecondaryFriendReadResponseDto responseDto = followService.getSecondaryFriend(user);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }
