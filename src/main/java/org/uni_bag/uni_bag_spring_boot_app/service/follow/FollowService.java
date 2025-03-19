@@ -77,4 +77,11 @@ public class FollowService {
         return SecondaryFriendUpdateResponseDto.from(secondaryFriend);
 
     }
+
+    public SecondaryFriendReadResponseDto getSecondaryFriend(User user) {
+        Follow secondaryFriend = followRepository.findByFollowerAndIsSecondaryFriend(user, true)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSecondaryFriendError));
+
+        return SecondaryFriendReadResponseDto.fromEntity(secondaryFriend.getFollowee());
+    }
 }
