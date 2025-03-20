@@ -22,27 +22,27 @@ public class DgLectureSpecifications {
         return (root, query, cb) -> semester != null ? cb.equal(root.get("semester"), semester) : null;
     }
 
-    public static Specification<DgLecture> ocEquals(String oc) {
-        return (root, query, cb) -> cb.equal(root.get("offeringCollege"), oc);
+    public static Specification<DgLecture> ocLike(String oc) {
+        return (root, query, cb) -> cb.like(root.get("offeringCollege"), oc);
     }
 
-    public static Specification<DgLecture> odEquals(String od) {
-        return (root, query, cb) -> cb.equal(root.get("offeringDepartment"), od);
+    public static Specification<DgLecture> odLike(String od) {
+        return (root, query, cb) -> cb.like(root.get("offeringDepartment"), od);
     }
 
-    public static Specification<DgLecture> omEquals(String om) {
-        return (root, query, cb) -> cb.equal(root.get("offeringMajor"), om);
+    public static Specification<DgLecture> omLike(String om) {
+        return (root, query, cb) -> cb.like(root.get("offeringMajor"), om);
     }
     public static Specification<DgLecture> gradeEquals(String grade) {
         return (root, query, cb) -> cb.equal(root.get("targetGrade"), grade);
     }
 
-    public static Specification<DgLecture> professorEquals(String professor) {
-        return (root, query, cb) -> cb.equal(root.get("instructor"), professor);
+    public static Specification<DgLecture> professorLike(String professor) {
+        return (root, query, cb) -> cb.like(root.get("instructor"), professor);
     }
 
-    public static Specification<DgLecture> lectureNameEquals(String lectureName) {
-        return (root, query, cb) -> cb.equal(root.get("courseName"), lectureName);
+    public static Specification<DgLecture> lectureNameLike(String lectureName) {
+        return (root, query, cb) -> cb.like(root.get("courseName"), lectureName);
     }
 
     public static Specification<DgLecture> idGreaterThan(Long cursorId) {
