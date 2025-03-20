@@ -31,9 +31,9 @@ public class LectureSearchService {
 
         spec = spec.and(DgLectureSpecifications.yearEquals(year));
         spec = spec.and(DgLectureSpecifications.semesterEquals(semester));
-        if (StringUtils.hasText(oc)) spec = spec.and(DgLectureSpecifications.ocLike("%" + oc + "%"));
-        if (StringUtils.hasText(od)) spec = spec.and(DgLectureSpecifications.odLike("%" +od + "%"));
-        if (StringUtils.hasText(om)) spec = spec.and(DgLectureSpecifications.omLike("%" + om + "%"));
+        if (oc != null) spec = spec.and(DgLectureSpecifications.ocEquals(oc));
+        if (od != null) spec = spec.and(DgLectureSpecifications.odEquals(od));
+        if (om != null) spec = spec.and(DgLectureSpecifications.omEquals(om));
         if (grade != null) spec = spec.and(DgLectureSpecifications.gradeEquals(grade+"학년"));
         if (StringUtils.hasText(professor)) spec = spec.and(DgLectureSpecifications.professorLike("%" + professor + "%"));
         if (StringUtils.hasText(lectureName)) spec = spec.and(DgLectureSpecifications.lectureNameLike("%" + lectureName + "%"));
