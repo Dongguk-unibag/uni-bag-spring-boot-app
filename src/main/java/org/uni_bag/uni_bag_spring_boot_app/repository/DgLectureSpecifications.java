@@ -37,12 +37,12 @@ public class DgLectureSpecifications {
         return (root, query, cb) -> cb.equal(root.get("targetGrade"), grade);
     }
 
-    public static Specification<DgLecture> professorEquals(String professor) {
-        return (root, query, cb) -> cb.equal(root.get("instructor"), professor);
+    public static Specification<DgLecture> professorLike(String professor) {
+        return (root, query, cb) -> cb.like(root.get("instructor"), professor);
     }
 
-    public static Specification<DgLecture> lectureNameEquals(String lectureName) {
-        return (root, query, cb) -> cb.equal(root.get("courseName"), lectureName);
+    public static Specification<DgLecture> lectureNameLike(String lectureName) {
+        return (root, query, cb) -> cb.like(root.get("courseName"), lectureName);
     }
 
     public static Specification<DgLecture> idGreaterThan(Long cursorId) {
