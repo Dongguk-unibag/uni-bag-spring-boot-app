@@ -72,4 +72,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.error("IO Exception: {}", ex.getMessage());
         }
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String requestURI  = request.getRequestURI();
+        return requestURI.matches("^/api/auth/login$") ||
+                requestURI.matches("^/api/auth/logout$") ||
+                requestURI.matches("^/api/auth/refreshToken$") ||
+                requestURI.matches("^/h2-console/.*$") ||
+                requestURI.matches("^/images/.*$") ||
+                requestURI.matches("^/swagger-ui/.*$") ||
+                requestURI.matches("^/v3/api-docs/.*$") ||
+                requestURI.matches("^/actuator/.*$") ||
+                requestURI.matches("^/api/server/env$");
+    }
 }
