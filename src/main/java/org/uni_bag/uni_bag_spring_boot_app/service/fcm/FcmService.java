@@ -3,6 +3,7 @@ package org.uni_bag.uni_bag_spring_boot_app.service.fcm;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,10 +49,14 @@ public class FcmService {
     }
 
     private Message createMessage(String title, String body, String fcmToken) {
+        Notification notification = Notification.builder()
+                .setTitle(title)
+                .setBody(body)
+                .build();
+
         return Message.builder()
-                .putData("title", title)
-                .putData("body", body)
                 .setToken(fcmToken)
+                .setNotification(notification)
                 .build();
     }
 }
