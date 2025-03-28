@@ -1,5 +1,6 @@
 package org.uni_bag.uni_bag_spring_boot_app.dto.assignment;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +45,10 @@ class AssignmentDto {
     @Schema(example = "2025-01-17T15:11:58.340Z", description = "과제 종료일")
     private LocalDateTime endDateTime;
 
+    @JsonProperty("isCompleted")
+    @Schema(example = "true", description = "과제 완료 여부")
+    private boolean completed;
+
     public static AssignmentDto fromEntity(Assignment assignment){
         return AssignmentDto.builder()
                 .assignmentId(assignment.getId())
@@ -52,6 +57,7 @@ class AssignmentDto {
                 .lecture(assignment.getLecture() == null ? null : AssignmentLectureDto.fromEntity(assignment.getLecture()))
                 .startDateTime(assignment.getStartDateTime())
                 .endDateTime(assignment.getEndDateTime())
+                .completed(assignment.isCompleted())
                 .build();
     }
 }
