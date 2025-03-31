@@ -9,6 +9,7 @@ import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.*;
 import org.uni_bag.uni_bag_spring_boot_app.exception.HttpErrorException;
 import org.uni_bag.uni_bag_spring_boot_app.repository.TimeTableLectureRepository;
 import org.uni_bag.uni_bag_spring_boot_app.repository.TimeTableRepository;
+import org.uni_bag.uni_bag_spring_boot_app.service.assignment.TimetableNotificationService;
 import org.uni_bag.uni_bag_spring_boot_app.service.timetable.TimetableService;
 
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.Optional;
 @Transactional
 public class MyTimeTableService {
     private final TimetableService timetableService;
+
+    private final TimetableNotificationService timetableNotificationService;
 
     private final TimeTableRepository timeTableRepository;
     private final TimeTableLectureRepository timeTableLectureRepository;
@@ -54,9 +57,9 @@ public class MyTimeTableService {
         return MyTimetableGetResponseDto.of(foundTimeTable, lecturesTimeMap);
     }
 
-    public MyTimeTableCreateResponseDto createMyTimeTable(User user, MyTimeTableCreateRequestDto requestDto){
+    public MyTimeTableCreateResponseDto createMyTimeTable(User user, MyTimeTableCreateRequestDto requestDto) {
         Optional<TimeTable> timeTableOptional = timeTableRepository.findByUserAndYearAndSemester(user, requestDto.getYear(), requestDto.getSemester());
-        if(timeTableOptional.isPresent()){
+        if (timeTableOptional.isPresent()) {
             throw new HttpErrorException(HttpErrorCode.AlreadyExistSeasonTable);
         }
 
@@ -75,13 +78,18 @@ public class MyTimeTableService {
         TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(timeTableId, user)
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
 
-        if(foundTimeTable.isPrimary()){
+        if (foundTimeTable.isPrimary()) {
             throw new HttpErrorException(HttpErrorCode.AlreadyPrimaryTimeTableError);
         }
 
         Optional<TimeTable> originalPrimaryTimeTableOptional = timeTableRepository.findByUserAndIsPrimary(user, true);
-        originalPrimaryTimeTableOptional.ifPresent(timeTable -> timeTable.updatePrimary(false));
+        originalPrimaryTimeTableOptional.ifPresent((timeTable) -> {
+            timeTable.updatePrimary(false);
+            timetableNotificationService.cancelNotification(timeTable);
+        });
+
         foundTimeTable.updatePrimary(true);
+        timetableNotificationService.scheduleNotification(foundTimeTable);
 
         return MyPrimaryTimeTableUpdateResponseDto.fromEntity(foundTimeTable);
     }
@@ -89,6 +97,7 @@ public class MyTimeTableService {
     public MyPrimaryTimeTableUpdateResponseDto deleteMyPrimaryTimeTable(User user) {
         TimeTable foundTimeTable = timeTableRepository.findByUserAndIsPrimary(user, true).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoPrimaryTimeTableError));
         foundTimeTable.updatePrimary(false);
+        timetableNotificationService.cancelNotification(foundTimeTable);
 
         return MyPrimaryTimeTableUpdateResponseDto.fromEntity(foundTimeTable);
     }
