@@ -12,4 +12,5 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long> {
     Optional<TimeTable> findByIdAndUser(Long id, User user);
     List<TimeTable> findAllByUser(User user);
     Optional<TimeTable> findByUserAndIsPrimary(User user, boolean isPrimary);
+    List<TimeTable> findAllByIsPrimary(boolean isPrimary);
 }
