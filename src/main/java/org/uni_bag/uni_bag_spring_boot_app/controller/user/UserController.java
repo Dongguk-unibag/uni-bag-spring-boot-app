@@ -28,12 +28,7 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "회원 정보 조회")
-    @ApiErrorCodeExamples(value = {
-            @ApiErrorCodeExample(value = HttpErrorCode.AccessDeniedError),
-            @ApiErrorCodeExample(value = HttpErrorCode.NotValidAccessTokenError),
-            @ApiErrorCodeExample(value = HttpErrorCode.ExpiredAccessTokenError),
-            @ApiErrorCodeExample(value = HttpErrorCode.UserNotFoundError)
-    })
+    @JwtTokenErrorExample
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserInfoResponseDto.class)))
     @GetMapping()
     public ResponseEntity<UserInfoResponseDto> getUserInfo(@AuthenticationPrincipal User user) {
@@ -58,6 +53,7 @@ public class UserController {
     @Operation(summary = "이용약관 동의")
     @JwtTokenErrorExample
     @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.UserNotFoundError),
             @ApiErrorCodeExample(value = HttpErrorCode.AlreadyAgreeTosError)
     })
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTosAgreementResponseDto.class)))
@@ -69,6 +65,9 @@ public class UserController {
 
     @Operation(summary = "TOS 철회 및 EMS 정보 삭제")
     @JwtTokenErrorExample
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.UserNotFoundError),
+    })
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTosRescissionResponseDto.class)))
     @PostMapping("/tos/rescission")
     public ResponseEntity<UserTosRescissionResponseDto> rescindTos(@AuthenticationPrincipal User user) {
@@ -79,6 +78,7 @@ public class UserController {
     @Operation(summary = "EMS 로그인 완료")
     @JwtTokenErrorExample
     @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.UserNotFoundError),
             @ApiErrorCodeExample(value = HttpErrorCode.AlreadyEmsLoginError)
     })
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = UserEmsLoginCompleteResponseDto.class)))
