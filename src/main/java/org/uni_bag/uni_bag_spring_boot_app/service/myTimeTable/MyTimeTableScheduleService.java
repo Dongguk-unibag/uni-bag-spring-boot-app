@@ -41,7 +41,7 @@ public class MyTimeTableScheduleService {
             newLectures.add(new LectureColor(foundLecture, newLectureScheduleDto.getLectureColor()));
 
             if(foundTimeTable.getYear() != foundLecture.getYear() || foundTimeTable.getSemester() != foundLecture.getSemester()){
-                throw new HttpErrorException(HttpErrorCode.SemesterMismatchException);
+                throw new HttpErrorException(HttpErrorCode.SemesterMismatchError);
             }
 
             newLectureTimes.addAll(dgLectureTimeRepository.findAllByDgLecture(foundLecture));

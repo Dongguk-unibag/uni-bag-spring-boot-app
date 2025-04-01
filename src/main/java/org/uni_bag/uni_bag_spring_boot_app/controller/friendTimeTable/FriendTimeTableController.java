@@ -60,6 +60,7 @@ public class FriendTimeTableController {
     @Operation(summary = "친구 primary 시간표 조회")
     @JwtTokenErrorExample
     @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.UserNotFoundError),
             @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
             @ApiErrorCodeExample(value = HttpErrorCode.AccessDeniedError, description = "서로 친구 관계가 아닐 경우 발생"),
     })

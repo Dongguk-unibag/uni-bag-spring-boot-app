@@ -66,7 +66,7 @@ public class MyTimeTableController {
     @Operation(summary = "primary 강의 시간표 조회")
     @JwtTokenErrorExample()
     @ApiErrorCodeExamples(value = {
-            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
+            @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
     })
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MyTimetableGetResponseDto.class)))
     @GetMapping("/primary")
@@ -92,7 +92,7 @@ public class MyTimeTableController {
     @JwtTokenErrorExample()
     @ApiErrorCodeExamples(value = {
             @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
-            @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
+            @ApiErrorCodeExample(value = HttpErrorCode.AlreadyPrimaryTimeTableError),
     })
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyPrimaryTimeTableUpdateResponseDto.class)))
     @PutMapping("/primary/{timetableId}")
@@ -105,7 +105,6 @@ public class MyTimeTableController {
     @Operation(summary = "Primary 시간표 삭제")
     @JwtTokenErrorExample()
     @ApiErrorCodeExamples(value = {
-            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
             @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
     })
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyPrimaryTimeTableUpdateResponseDto.class)))

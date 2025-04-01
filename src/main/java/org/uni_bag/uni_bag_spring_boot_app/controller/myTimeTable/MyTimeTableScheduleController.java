@@ -35,7 +35,7 @@ public class MyTimeTableScheduleController {
     @ApiErrorCodeExamples(value = {
             @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
             @ApiErrorCodeExample(value = HttpErrorCode.NoSuchLectureError),
-            @ApiErrorCodeExample(value = HttpErrorCode.SemesterMismatchException),
+            @ApiErrorCodeExample(value = HttpErrorCode.SemesterMismatchError),
             @ApiErrorCodeExample(value = HttpErrorCode.OverLappingLectureError),
             @ApiErrorCodeExample(value = HttpErrorCode.AlreadyExistLectureScheduleError),
     })

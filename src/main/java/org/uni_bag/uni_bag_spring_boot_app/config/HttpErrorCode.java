@@ -102,7 +102,7 @@ public enum HttpErrorCode {
     NoSuchLectureError(
             HttpStatus.NOT_FOUND, "존재하지 않는 강의입니다"
     ),
-    SemesterMismatchException(
+    SemesterMismatchError(
             HttpStatus.CONFLICT, "선택한 강의와 시간표의 학기가 일치하지 않습니다."
     ),
     OverLappingLectureError(

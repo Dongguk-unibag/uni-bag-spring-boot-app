@@ -70,8 +70,9 @@ public class FollowController {
     @Operation(summary = "Secondary 친구 등록")
     @JwtTokenErrorExample()
     @ApiErrorCodeExamples(value = {
-            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
-            @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
+            @ApiErrorCodeExample(value = HttpErrorCode.UserNotFoundError),
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchFollowError),
+            @ApiErrorCodeExample(value = HttpErrorCode.AlreadySecondaryFriendError),
     })
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyPrimaryTimeTableUpdateResponseDto.class)))
     @PutMapping("/secondary/{friendId}")
@@ -85,8 +86,7 @@ public class FollowController {
     @Operation(summary = "Secondary 친구 삭제")
     @JwtTokenErrorExample()
     @ApiErrorCodeExamples(value = {
-            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
-            @ApiErrorCodeExample(value = HttpErrorCode.NoPrimaryTimeTableError),
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSecondaryFriendError),
     })
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyPrimaryTimeTableUpdateResponseDto.class)))
     @DeleteMapping("/secondary")

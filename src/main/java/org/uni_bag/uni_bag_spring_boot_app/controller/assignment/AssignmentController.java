@@ -92,7 +92,7 @@ public class AssignmentController {
     @Operation(summary = "과제 삭제")
     @JwtTokenErrorExample
     @ApiErrorCodeExamples(value = {
-            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchLectureError)
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchAssignmentError)
     })
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = AssignmentDeleteResponseDto.class)))
     @DeleteMapping("/{assignmentId}")
