@@ -63,6 +63,29 @@ public class MyTimeTableScheduleService {
         return MyTimeTableScheduleCreateResponseDto.fromEntity(foundTimeTable, newLectures);
     }
 
+    public MyTimeTableScheduleCreateResponseDto createNdrimsTimeTableSchedule(User user, NdrimsTimeTableScheduleCreateRequestDto requestDto) {
+        List<LectureColor> newLectures = new ArrayList<>();
+
+        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(requestDto.getTimeTableId(), user)
+                .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
+
+        int year = foundTimeTable.getYear();
+        int semester = foundTimeTable.getSemester();
+
+        // 기존 강의 일정 모두 삭제
+        timeTableLectureRepository.deleteAllByTimeTable(foundTimeTable);
+
+        // 새롭게 추가할 강의와 강의 시간에 대한 엔티티 조회
+        for (NewNdrimsLectureSchedule newLectureScheduleDto : requestDto.getNewLectureSchedules()) {
+            DgLecture foundLecture = dgLectureRepository.findByCourseCodeAndYearAndSemester(newLectureScheduleDto.getSbjNo(), year, semester).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchLectureError));
+            newLectures.add(new LectureColor(foundLecture, newLectureScheduleDto.getLectureColor()));
+        }
+
+        newLectures.forEach(lectureColor -> timeTableLectureRepository.save(TimeTableLecture.of(foundTimeTable, lectureColor)));
+
+        return MyTimeTableScheduleCreateResponseDto.fromEntity(foundTimeTable, newLectures);
+    }
+
     public MyTimeTableScheduleDeleteResponseDto deleteMyTimeTableSchedule(User user, MyTimeTableScheduleDeleteRequestDto requestDto) {
         TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(requestDto.getTimeTableId(), user)
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
