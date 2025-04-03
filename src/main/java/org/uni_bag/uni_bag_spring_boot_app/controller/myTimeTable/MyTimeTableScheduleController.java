@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.uni_bag.uni_bag_spring_boot_app.config.HttpErrorCode;
 import org.uni_bag.uni_bag_spring_boot_app.domain.User;
 import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable.MyTimeTableDeleteResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleCreateRequestDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleCreateResponseDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleDeleteRequestDto;
-import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.MyTimeTableScheduleDeleteResponseDto;
+import org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTableSchedule.*;
 import org.uni_bag.uni_bag_spring_boot_app.service.myTimeTable.MyTimeTableScheduleService;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExample;
 import org.uni_bag.uni_bag_spring_boot_app.swagger.ApiErrorCodeExamples;
@@ -44,6 +41,20 @@ public class MyTimeTableScheduleController {
     public ResponseEntity<MyTimeTableScheduleCreateResponseDto> addMyTimeTableSchedule(@AuthenticationPrincipal User user,
                                                                                        @Valid @RequestBody MyTimeTableScheduleCreateRequestDto requestDto){
         MyTimeTableScheduleCreateResponseDto responseDto = myTimeTableScheduleService.createMyTimeTableSchedule(user, requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "개인 시간표 강의 일정 등록(Ndrims)")
+    @JwtTokenErrorExample()
+    @ApiErrorCodeExamples(value = {
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchTimeTableError),
+            @ApiErrorCodeExample(value = HttpErrorCode.NoSuchLectureError),
+    })
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = MyTimeTableScheduleCreateResponseDto.class)))
+    @PostMapping("/ndrims")
+    public ResponseEntity<MyTimeTableScheduleCreateResponseDto> addNdrimsTimeTableSchedule(@AuthenticationPrincipal User user,
+                                                                                       @Valid @RequestBody NdrimsTimeTableScheduleCreateRequestDto requestDto){
+        MyTimeTableScheduleCreateResponseDto responseDto = myTimeTableScheduleService.createNdrimsTimeTableSchedule(user, requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 

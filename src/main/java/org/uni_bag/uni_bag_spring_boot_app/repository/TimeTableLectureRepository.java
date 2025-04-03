@@ -12,4 +12,6 @@ public interface TimeTableLectureRepository extends JpaRepository<TimeTableLectu
     List<TimeTableLecture> findAllByTimeTable(TimeTable timeTable);
 
     Optional<TimeTableLecture> findByTimeTableAndLecture(TimeTable timeTable, DgLecture lecture);
+
+    void deleteAllByTimeTable(TimeTable foundTimeTable);
 }
