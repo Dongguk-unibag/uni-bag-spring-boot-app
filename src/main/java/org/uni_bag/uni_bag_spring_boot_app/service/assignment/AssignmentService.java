@@ -49,7 +49,10 @@ public class AssignmentService {
         checkAssignmentTimeValid(requestDto.getStartDateTime(), requestDto.getEndDateTime());
 
         Assignment newAssignment = assignmentRepository.save(Assignment.of(user, lecture, requestDto));
-        notificationService.scheduleNotification(newAssignment);
+
+        if(requestDto.getEndDateTime() != null) {
+            notificationService.scheduleNotification(newAssignment);
+        }
 
         return AssignmentCreateResponseDto.fromEntity(newAssignment);
     }
@@ -73,7 +76,10 @@ public class AssignmentService {
         checkAssignmentTimeValid(requestDto.getStartDateTime(), requestDto.getEndDateTime());
 
         foundAssignment.updateAssignment(requestDto, lecture);
-        notificationService.rescheduleNotification(foundAssignment);
+
+        if(requestDto.getEndDateTime() != null) {
+            notificationService.rescheduleNotification(foundAssignment);
+        }
 
         return AssignmentUpdateResponseDto.fromEntity(foundAssignment);
     }
@@ -83,7 +89,9 @@ public class AssignmentService {
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchAssignmentError));
 
         assignmentRepository.delete(foundAssignment);
-        notificationService.cancelNotification(foundAssignment);
+        if(foundAssignment.getEndDateTime() != null) {
+            notificationService.cancelNotification(foundAssignment);
+        }
 
         return AssignmentDeleteResponseDto.fromEntity(foundAssignment);
     }
