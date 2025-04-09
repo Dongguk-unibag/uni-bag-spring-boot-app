@@ -105,7 +105,7 @@ public class AssignmentController {
 
     @Operation(summary = "완료된 과제 전체 삭제")
     @JwtTokenErrorExample
-    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = AssignmentDeleteResponseDto.class)))
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = AssignmentDeleteListResponseDto.class)))
     @DeleteMapping("/completedAssignment")
     public ResponseEntity<AssignmentDeleteListResponseDto> deleteCompletedAssignment(@AuthenticationPrincipal User user){
         AssignmentDeleteListResponseDto responseDto = assignmentService.deleteCompletedAssignment(user);
