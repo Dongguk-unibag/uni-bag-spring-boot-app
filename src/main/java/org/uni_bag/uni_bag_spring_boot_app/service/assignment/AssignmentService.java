@@ -96,11 +96,11 @@ public class AssignmentService {
         return AssignmentDeleteResponseDto.fromEntity(foundAssignment);
     }
 
-    public List<AssignmentDeleteResponseDto> deleteCompletedAssignment(User user) {
+    public AssignmentDeleteListResponseDto deleteCompletedAssignment(User user) {
         List<Assignment> completedAssignments = assignmentRepository.findAllByUserAndIsCompletedTrue(user);
         assignmentRepository.deleteAll(completedAssignments);
 
-        return AssignmentDeleteResponseDto.fromEntity(completedAssignments);
+        return AssignmentDeleteListResponseDto.fromEntityList(completedAssignments);
     }
 
     private void checkAssignmentTimeValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
