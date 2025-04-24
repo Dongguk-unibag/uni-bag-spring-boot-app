@@ -99,13 +99,13 @@ public class AuthService {
         // RefreshToken 유효성 및 만료여부 확인
         boolean isExpiredRefreshToken = jwtTokenProvider.isExpiredToken(resolvedRefreshToken);
         if (isExpiredRefreshToken) {
-            redisService.delete(resolvedAccessToken);
+            redisService.delete(resolvedRefreshToken);
             throw new HttpErrorException(HttpErrorCode.ExpiredRefreshTokenError);
         }
 
         // RefreshToken이 탈취 당한 경우
         if (!resolvedAccessToken.equals(savedAccessToken)) {
-            redisService.delete(resolvedAccessToken);
+            redisService.delete(resolvedRefreshToken);
             throw new HttpErrorException(HttpErrorCode.NoSuchAccessTokenError);
         }
 
