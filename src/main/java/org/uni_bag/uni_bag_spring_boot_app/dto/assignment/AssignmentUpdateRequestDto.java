@@ -3,6 +3,7 @@ package org.uni_bag.uni_bag_spring_boot_app.dto.assignment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class AssignmentUpdateRequestDto {
     @Schema(example = "알고리즘 과제", description = "과제 제목")
     @NotBlank(message = "과제 제목을 입력해주세요")

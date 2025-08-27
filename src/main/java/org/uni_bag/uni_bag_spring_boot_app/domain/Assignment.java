@@ -63,4 +63,18 @@ public class Assignment {
                 .endDateTime(requestDto.getEndDateTime())
                 .build();
     }
+
+    public static Assignment of(Long id, String title, String description,
+                                       DgLecture lecture, LocalDateTime start, LocalDateTime end,
+                                       boolean completed) {
+        return Assignment.builder()
+                .id(id)
+                .title(title)
+                .description(description)
+                .lecture(lecture)
+                .startDateTime(start)
+                .endDateTime(end)
+                .isCompleted(completed)
+                .build();
+    }
 }
