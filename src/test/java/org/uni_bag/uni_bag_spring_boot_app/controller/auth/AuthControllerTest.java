@@ -65,6 +65,27 @@ class AuthControllerTest {
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.token").exists());
         }
+
+        @Test
+        @WithMockUser
+        @DisplayName("실패 - Oauth 로그인 실패")
+        void whenOauthLoginFail_MustReturnError() throws Exception {
+            String invalidKakaoAccessToken = "Bearer 12345";
+
+            LoginRequestDto request = new LoginRequestDto(SnsType.Kakao, invalidKakaoAccessToken);
+            HttpErrorCode badRequestKakaoError = HttpErrorCode.BadRequestKakaoError;
+
+            given(authService.login(any(LoginRequestDto.class))).willThrow(new HttpErrorException(badRequestKakaoError));
+
+            // when & then
+            mockMvc.perform(post("/api/auth/login")
+                            .content(objectMapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .with(csrf()))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errorCode").value(badRequestKakaoError.name()))
+                    .andExpect(jsonPath("$.message").value(badRequestKakaoError.getMessage()));
+        }
     }
 
     @Nested
@@ -266,6 +287,29 @@ class AuthControllerTest {
                     .andExpect(status().isUnauthorized())
                     .andExpect(jsonPath("$.errorCode").value(noSuchRefreshTokenError.name()))
                     .andExpect(jsonPath("$.message").value(noSuchRefreshTokenError.getMessage()));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("실패 - Oauth 탈퇴 실패")
+        void whenOauthWithdrawalFail_MustReturnError() throws Exception {
+            String invalidOauth2AccessToken = "Bearer 23456";
+            String serviceRefreshToken = "Bearer 34567";
+
+            HttpErrorCode badRequestKakaoError = HttpErrorCode.BadRequestKakaoError;
+            doThrow(new HttpErrorException(badRequestKakaoError))
+                    .when(authService).deleteUser(any(), any(), any());
+
+            // when & then
+            mockMvc.perform(post("/api/auth/delete")
+                            .header("OAuthAccessToken", invalidOauth2AccessToken)
+                            .header("Authorization-refresh", serviceRefreshToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .with(csrf()))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errorCode").value(badRequestKakaoError.name()))
+                    .andExpect(jsonPath("$.message").value(badRequestKakaoError.getMessage()));
+
         }
     }
 }
