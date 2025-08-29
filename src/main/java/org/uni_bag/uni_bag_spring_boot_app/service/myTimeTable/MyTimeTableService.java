@@ -58,7 +58,7 @@ public class MyTimeTableService {
     }
 
     public MyTimeTableCreateResponseDto createMyTimeTable(User user, MyTimeTableCreateRequestDto requestDto) {
-        Optional<TimeTable> timeTableOptional = timeTableRepository.findByUserAndYearAndSemester(user, requestDto.getYear(), requestDto.getSemester());
+        Optional<TimeTable> timeTableOptional = timeTableRepository.findByUserAndAcademicYearAndSemester(user, requestDto.getYear(), requestDto.getSemester());
         if (timeTableOptional.isPresent()) {
             throw new HttpErrorException(HttpErrorCode.AlreadyExistSeasonTable);
         }

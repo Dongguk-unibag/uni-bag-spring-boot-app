@@ -47,7 +47,7 @@ class TimeTableInfo{
     public static TimeTableInfo of(TimeTable timeTable){
         return TimeTableInfo.builder()
                 .timeTableId(timeTable.getId())
-                .year(timeTable.getYear())
+                .year(timeTable.getAcademicYear())
                 .semester(timeTable.getSemester())
                 .build();
     }

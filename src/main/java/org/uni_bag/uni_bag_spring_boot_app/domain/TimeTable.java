@@ -23,7 +23,7 @@ public class TimeTable {
     private User user;
 
     @Column(nullable = false)
-    private int year;
+    private int academicYear;
 
     @Column(nullable = false)
     private int semester;
@@ -34,7 +34,7 @@ public class TimeTable {
 
     public static TimeTable of(int year, int semester, User user, int tableOrder) {
         return TimeTable.builder()
-                .year(year)
+                .academicYear(year)
                 .semester(semester)
                 .user(user)
                 .build();
