@@ -40,7 +40,7 @@ public class MyTimeTableScheduleService {
             DgLecture foundLecture = dgLectureRepository.findById(newLectureScheduleDto.getLectureId()).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchLectureError));
             newLectures.add(new LectureColor(foundLecture, newLectureScheduleDto.getLectureColor()));
 
-            if(foundTimeTable.getYear() != foundLecture.getYear() || foundTimeTable.getSemester() != foundLecture.getSemester()){
+            if(foundTimeTable.getAcademicYear() != foundLecture.getYear() || foundTimeTable.getSemester() != foundLecture.getSemester()){
                 throw new HttpErrorException(HttpErrorCode.SemesterMismatchError);
             }
 
@@ -69,7 +69,7 @@ public class MyTimeTableScheduleService {
         TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(requestDto.getTimeTableId(), user)
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
 
-        int year = foundTimeTable.getYear();
+        int year = foundTimeTable.getAcademicYear();
         int semester = foundTimeTable.getSemester();
 
         // 기존 강의 일정 모두 삭제

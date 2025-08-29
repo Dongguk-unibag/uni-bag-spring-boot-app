@@ -25,7 +25,7 @@ public class TimeTableInfoDto {
     public static TimeTableInfoDto from(TimeTable timeTable) {
         return TimeTableInfoDto.builder()
                 .timeTableId(timeTable.getId())
-                .year(timeTable.getYear())
+                .year(timeTable.getAcademicYear())
                 .semester(timeTable.getSemester())
                 .isPrimary(timeTable.isPrimary())
                 .build();

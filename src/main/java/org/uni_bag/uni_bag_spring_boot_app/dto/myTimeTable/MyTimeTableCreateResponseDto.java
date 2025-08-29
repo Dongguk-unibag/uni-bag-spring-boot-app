@@ -26,7 +26,7 @@ public class MyTimeTableCreateResponseDto {
     public static MyTimeTableCreateResponseDto fromEntity(TimeTable timeTable){
         return MyTimeTableCreateResponseDto.builder()
                 .timetableId(timeTable.getId())
-                .year(timeTable.getYear())
+                .year(timeTable.getAcademicYear())
                 .semester(timeTable.getSemester())
                 .message("성공적으로 시간표를 생성하였습니다")
                 .build();
