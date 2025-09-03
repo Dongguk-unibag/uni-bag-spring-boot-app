@@ -515,7 +515,7 @@ class AssignmentControllerTest {
                 .offeringMajor("소프트웨어")
                 .teamTeaching("없음")
                 .remarks("특이사항 없음")
-                .year(2025)
+                .academicYear(2025)
                 .semester(1)
                 .dgLectureTimes(List.of()) // 필요시 DgLectureTime 객체 추가 가능
                 .build();

@@ -125,7 +125,7 @@ class FoundLectureInfo {
                 .offeringMajor(lecture.getOfferingCollege() + "-" + lecture.getOfferingDepartment() + "-" +  lecture.getOfferingMajor())
                 .teamTeaching(lecture.getTeamTeaching())
                 .remarks(lecture.getRemarks())
-                .year(lecture.getYear())
+                .year(lecture.getAcademicYear())
                 .semester(lecture.getSemester())
                 .theory(lecture.getTheory())
                 .practical(lecture.getPractical())
@@ -134,7 +134,7 @@ class FoundLectureInfo {
                 .engineeringAccreditation(lecture.getEngineeringAccreditation())
                 .teamTeaching(lecture.getTeamTeaching())
                 .remarks(lecture.getRemarks())
-                .year(lecture.getYear())
+                .year(lecture.getAcademicYear())
                 .semester(lecture.getSemester())
                 .build();
     }

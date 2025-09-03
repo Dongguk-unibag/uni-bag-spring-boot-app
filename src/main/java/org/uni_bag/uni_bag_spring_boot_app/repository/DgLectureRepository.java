@@ -7,5 +7,5 @@ import org.uni_bag.uni_bag_spring_boot_app.domain.DgLecture;
 import java.util.Optional;
 
 public interface DgLectureRepository extends JpaRepository<DgLecture, Long>, JpaSpecificationExecutor<DgLecture> {
-    Optional<DgLecture> findByCourseCodeAndYearAndSemester(String courseCode, int year, int semester);
+    Optional<DgLecture> findByCourseCodeAndAcademicYearAndSemester(String courseCode, int academicYear, int semester);
 }
