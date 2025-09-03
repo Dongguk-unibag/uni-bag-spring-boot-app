@@ -77,7 +77,7 @@ class LectureSearchServiceTest {
                 .offeringMajor("소프트웨어")
                 .teamTeaching("없음")
                 .remarks("특이사항 없음")
-                .year(year)
+                .academicYear(year)
                 .semester(semester)
                 .dgLectureTimes(List.of()) // 필요시 DgLectureTime 객체 추가 가능
                 .build();

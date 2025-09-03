@@ -40,7 +40,7 @@ public class MyTimeTableScheduleService {
             DgLecture foundLecture = dgLectureRepository.findById(newLectureScheduleDto.getLectureId()).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchLectureError));
             newLectures.add(new LectureColor(foundLecture, newLectureScheduleDto.getLectureColor()));
 
-            if(foundTimeTable.getAcademicYear() != foundLecture.getYear() || foundTimeTable.getSemester() != foundLecture.getSemester()){
+            if(foundTimeTable.getAcademicYear() != foundLecture.getAcademicYear() || foundTimeTable.getSemester() != foundLecture.getSemester()){
                 throw new HttpErrorException(HttpErrorCode.SemesterMismatchError);
             }
 
@@ -77,7 +77,7 @@ public class MyTimeTableScheduleService {
 
         // 새롭게 추가할 강의와 강의 시간에 대한 엔티티 조회
         for (NewNdrimsLectureSchedule newLectureScheduleDto : requestDto.getNewLectureSchedules()) {
-            DgLecture foundLecture = dgLectureRepository.findByCourseCodeAndYearAndSemester(newLectureScheduleDto.getSbjNo(), year, semester).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchLectureError));
+            DgLecture foundLecture = dgLectureRepository.findByCourseCodeAndAcademicYearAndSemester(newLectureScheduleDto.getSbjNo(), year, semester).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchLectureError));
             newLectures.add(new LectureColor(foundLecture, newLectureScheduleDto.getLectureColor()));
         }
 
