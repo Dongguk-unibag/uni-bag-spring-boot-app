@@ -29,39 +29,51 @@ public class MyTimeTableScheduleService {
     private final TimeTableLectureRepository timeTableLectureRepository;
 
     public MyTimeTableScheduleCreateResponseDto createMyTimeTableSchedule(User user, @Valid MyTimeTableScheduleCreateRequestDto requestDto) {
-        List<DgLectureTime> newLectureTimes = new ArrayList<>();
-        List<LectureColor> newLectures = new ArrayList<>();
+        List<DgLectureTime> candidateLectureTimes = new ArrayList<>();   // 새로 추가하려는 강의 시간 후보들
+        List<LectureColor> candidateLectures = new ArrayList<>();        // 새로 추가하려는 강의들
 
-        TimeTable foundTimeTable = timeTableRepository.findByIdAndUser(requestDto.getTimeTableId(), user)
+        TimeTable timeTable = timeTableRepository.findByIdAndUser(requestDto.getTimeTableId(), user)
                 .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchTimeTableError));
 
-        // 새롭게 추가할 강의와 강의 시간에 대한 엔티티 조회
-        for (NewLectureScheduleDto newLectureScheduleDto : requestDto.getNewLectureSchedules()) {
-            DgLecture foundLecture = dgLectureRepository.findById(newLectureScheduleDto.getLectureId()).orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchLectureError));
-            newLectures.add(new LectureColor(foundLecture, newLectureScheduleDto.getLectureColor()));
+        // 요청에서 넘어온 강의들 조회 및 검증
+        for (NewLectureScheduleDto scheduleDto : requestDto.getNewLectureSchedules()) {
+            DgLecture lecture = dgLectureRepository.findById(scheduleDto.getLectureId())
+                    .orElseThrow(() -> new HttpErrorException(HttpErrorCode.NoSuchLectureError));
 
-            if(foundTimeTable.getAcademicYear() != foundLecture.getAcademicYear() || foundTimeTable.getSemester() != foundLecture.getSemester()){
+            candidateLectures.add(new LectureColor(lecture, scheduleDto.getLectureColor()));
+
+            if (timeTable.getAcademicYear() != lecture.getAcademicYear()
+                    || timeTable.getSemester() != lecture.getSemester()) {
                 throw new HttpErrorException(HttpErrorCode.SemesterMismatchError);
             }
 
-            newLectureTimes.addAll(dgLectureTimeRepository.findAllByDgLecture(foundLecture));
+            candidateLectureTimes.addAll(dgLectureTimeRepository.findAllByDgLecture(lecture));
         }
 
-        List<DgLecture> existingLectures = timeTableLectureRepository.findAllByTimeTable(foundTimeTable).stream().map(TimeTableLecture::getLecture).toList();
-        List<DgLectureTime> existingLectureTimes = new ArrayList<>(existingLectures.stream().flatMap(dgLecture -> dgLectureTimeRepository.findAllByDgLecture(dgLecture).stream()).toList());
+        List<DgLecture> existingLectures = timeTableLectureRepository.findAllByTimeTable(timeTable)
+                .stream().map(TimeTableLecture::getLecture).toList();
 
-        checkLectureDuplicated(existingLectures, newLectures);
+        List<DgLectureTime> existingLectureTimes = new ArrayList<>(
+                existingLectures.stream()
+                        .flatMap(lec -> dgLectureTimeRepository.findAllByDgLecture(lec).stream())
+                        .toList()
+        );
 
-        while (!newLectureTimes.isEmpty()) {
-            checkLecturesOverlapped(existingLectureTimes, newLectureTimes.get(0));
-            existingLectureTimes.add(newLectureTimes.get(0));
-            newLectureTimes.remove(0);
+        checkLectureDuplicated(existingLectures, candidateLectures);
+
+        while (!candidateLectureTimes.isEmpty()) {
+            checkLecturesOverlapped(existingLectureTimes, candidateLectureTimes.get(0));
+            existingLectureTimes.add(candidateLectureTimes.get(0));
+            candidateLectureTimes.remove(0);
         }
 
-        newLectures.forEach(lectureColor -> timeTableLectureRepository.save(TimeTableLecture.of(foundTimeTable, lectureColor)));
+        candidateLectures.forEach(lectureColor ->
+                timeTableLectureRepository.save(TimeTableLecture.of(timeTable, lectureColor))
+        );
 
-        return MyTimeTableScheduleCreateResponseDto.fromEntity(foundTimeTable, newLectures);
+        return MyTimeTableScheduleCreateResponseDto.fromEntity(timeTable, candidateLectures);
     }
+
 
     public MyTimeTableScheduleCreateResponseDto createNdrimsTimeTableSchedule(User user, NdrimsTimeTableScheduleCreateRequestDto requestDto) {
         List<LectureColor> newLectures = new ArrayList<>();
@@ -100,20 +112,20 @@ public class MyTimeTableScheduleService {
         return MyTimeTableScheduleDeleteResponseDto.of(foundTimeTable, deleteTargetLecture);
     }
 
-    private void checkLecturesOverlapped(List<DgLectureTime> existingLectureTimes, DgLectureTime newLectureTime){
-        for(DgLectureTime lectureTime : existingLectureTimes){
-            if(lectureTime.getDayOfWeek().equals(newLectureTime.getDayOfWeek())
+    private void checkLecturesOverlapped(List<DgLectureTime> existingLectureTimes, DgLectureTime newLectureTime) {
+        for (DgLectureTime lectureTime : existingLectureTimes) {
+            if (lectureTime.getDayOfWeek().equals(newLectureTime.getDayOfWeek())
                     && lectureTime.getStartTime().before(newLectureTime.getEndTime())
-                            && newLectureTime.getStartTime().before(lectureTime.getEndTime())){
+                    && newLectureTime.getStartTime().before(lectureTime.getEndTime())) {
                 throw new HttpErrorException(HttpErrorCode.OverLappingLectureError);
             }
         }
     }
 
-    private void checkLectureDuplicated(List<DgLecture> existingLectures, List<LectureColor> newLectures){
-        for(LectureColor newLecture : newLectures){
-            for(DgLecture existingLecture : existingLectures){
-                if(newLecture.getLecture().equals(existingLecture)){
+    private void checkLectureDuplicated(List<DgLecture> existingLectures, List<LectureColor> newLectures) {
+        for (LectureColor newLecture : newLectures) {
+            for (DgLecture existingLecture : existingLectures) {
+                if (newLecture.getLecture().equals(existingLecture)) {
                     throw new HttpErrorException(HttpErrorCode.AlreadyExistLectureScheduleError);
                 }
             }
