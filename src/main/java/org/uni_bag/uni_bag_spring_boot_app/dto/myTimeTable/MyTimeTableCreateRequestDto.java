@@ -2,11 +2,15 @@ package org.uni_bag.uni_bag_spring_boot_app.dto.myTimeTable;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MyTimeTableCreateRequestDto {
     @Schema(example = "2024", description = "시간표 년도")
     @NotNull(message = "년도가 필요합니다.")

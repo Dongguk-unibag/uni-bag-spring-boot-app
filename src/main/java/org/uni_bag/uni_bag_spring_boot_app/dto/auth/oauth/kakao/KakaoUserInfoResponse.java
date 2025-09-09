@@ -1,6 +1,7 @@
 package org.uni_bag.uni_bag_spring_boot_app.dto.auth.oauth.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import java.time.ZonedDateTime;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class KakaoUserInfoResponse {
     @JsonProperty("id")
     private Long id;

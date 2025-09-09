@@ -12,16 +12,15 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
-@Service
 @RequiredArgsConstructor
+@Service
 @Slf4j
 public class AssignmentNotificationService {
     private final ThreadPoolTaskScheduler taskScheduler;
     private final FcmService fcmService;
-    private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
+    private final Map<String, ScheduledFuture<?>> scheduledTasks; // 외부 주입
 
     public void scheduleNotification(Assignment assignment) {
         LocalDateTime endDateTime = assignment.getEndDateTime();

@@ -1,11 +1,13 @@
 package org.uni_bag.uni_bag_spring_boot_app.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class UserEmsLoginCompleteRequestDto {
     @Schema(example = "홍길동", description = "학생 이름")
     private String name;
