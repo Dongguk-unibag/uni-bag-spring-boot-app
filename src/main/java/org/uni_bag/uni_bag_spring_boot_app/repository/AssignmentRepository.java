@@ -12,7 +12,9 @@ import java.util.Optional;
 
 public interface AssignmentRepository extends JpaRepository<Assignment, String> {
     Optional<Assignment> findByIdAndUser(Long id, User user);
-    List<Assignment> findAllByUser(User user);
+
+    @Query("select a from Assignment a join fetch a.lecture join fetch a.user where a.user = :user")
+    List<Assignment> findAllByUser(@Param("user") User user);
     List<Assignment> findAllByUserAndIsCompletedTrue(User user);
 
     @Query("SELECT a FROM Assignment a WHERE a.isCompleted = false AND (a.endDateTime >= :oneHourLater OR a.endDateTime >= :tomorrow9AM)")
